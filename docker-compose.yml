@@ -1,0 +1,21 @@
+services:
+  smartsavings:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartsavings-landing
+    restart: unless-stopped
+    expose:
+      - "80"
+    networks:
+      - web-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  web-network:
+    external: true
