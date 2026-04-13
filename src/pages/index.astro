@@ -4,21 +4,22 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="SmartSavings - Tu Asistente Financiero de Confianza">
   <!-- Navigation -->
-  <nav class="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
+  <nav class="absolute w-full z-50 bg-transparent">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16">
+      <div class="flex justify-between items-center h-24">
         <div class="flex items-center gap-2">
-          <svg class="w-8 h-8 text-emerald-500" viewBox="0 0 24 24" fill="currentColor">
+          <svg class="w-8 h-8 text-[#5D7A94]" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
           </svg>
-          <span class="text-xl font-bold text-slate-700">SmartSavings</span>
+          <span class="text-xl font-bold text-[#273C4D]">SmartSavings</span>
         </div>
-        <div class="hidden md:flex items-center gap-8">
-          <a href="#features" class="text-slate-600 hover:text-slate-800 transition-colors">Funciones</a>
-          <a href="#how-it-works" class="text-slate-600 hover:text-slate-800 transition-colors">Cómo funciona</a>
-          <a href="#faq" class="text-slate-600 hover:text-slate-800 transition-colors">FAQ</a>
-          <a href="https://wa.me/573332937647" target="_blank" rel="noopener" class="bg-slate-600 text-white px-5 py-2 rounded-full hover:bg-slate-700 transition-colors font-medium">
-            Chatear ahora
+        <div class="hidden md:flex items-center gap-8 font-medium">
+          <a href="#" class="text-[#273C4D] hover:text-[#5D7A94] transition-colors">Home</a>
+          <a href="#" class="text-[#273C4D] hover:text-[#5D7A94] transition-colors">Produces</a>
+          <a href="#" class="text-[#273C4D] hover:text-[#5D7A94] transition-colors">Resources</a>
+          <a href="#" class="text-[#273C4D] hover:text-[#5D7A94] transition-colors">Blog</a>
+          <a href="#features" class="bg-[#7C9F8C] text-white px-6 py-2.5 rounded-full hover:bg-opacity-90 transition-colors">
+            Ver Funciones
           </a>
         </div>
       </div>
@@ -26,122 +27,52 @@ import Layout from '../layouts/Layout.astro';
   </nav>
 
   <!-- Hero Section -->
-  <section class="relative min-h-screen flex items-center pt-16 overflow-hidden bg-gradient-to-br from-blue-50 via-teal-50 to-emerald-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+  <section class="relative min-h-screen flex items-center pt-24 overflow-hidden bg-[#E8F2F6]">
+    <!-- Background Right Curve -->
+    <div class="absolute right-0 top-0 bottom-0 w-[55%] bg-[#FDF3E3] rounded-l-[150px] lg:rounded-l-[250px] z-0"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
       <div class="grid lg:grid-cols-2 gap-12 items-center">
         <!-- Left Content -->
-        <div class="space-y-8">
-          <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
-            <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-            Beta Gratuito - Acceso Inmediato
-          </div>
-          
-          <h1 class="text-5xl lg:text-6xl font-bold text-slate-700 leading-tight">
-            Tu Asistente Financiero de <span class="text-teal-500">Confianza</span>
+        <div class="space-y-8 max-w-xl">
+          <h1 class="text-5xl lg:text-7xl font-semibold text-[#5D7A94] leading-tight">
+            SmartSavings: <br/><span class="text-[#273C4D] font-bold mt-2 block tracking-tight">Tu Asistente Financiero de Confianza.</span>
           </h1>
           
-          <p class="text-xl text-slate-600 max-w-lg">
-            Controla tus gastos sin fricción. SmartSavings funciona 100% dentro de WhatsApp. 
-            Sin apps que descargar, sin formularios complejos.
+          <p class="text-xl text-[#273C4D]/80">
+            Administra tus finanzas, registra gastos e ingresos con seguridad y tranquilidad en WhatsApp.
           </p>
           
-          <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex flex-col sm:flex-row gap-4 pt-4">
             <a href="https://wa.me/573332937647" target="_blank" rel="noopener" 
-               class="bg-slate-600 text-white px-8 py-4 rounded-full hover:bg-slate-700 transition-all transform hover:scale-105 font-semibold text-center flex items-center justify-center gap-2">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-              </svg>
+               class="bg-[#678BAC] text-white px-8 py-4 rounded-full hover:bg-opacity-90 transition-all font-medium text-center shadow-lg">
               Chatear con SmartSavings
             </a>
             <a href="#features" 
-               class="bg-teal-500 text-white px-8 py-4 rounded-full hover:bg-teal-600 transition-all transform hover:scale-105 font-semibold text-center">
+               class="bg-[#7C9F8C] text-white px-8 py-4 rounded-full hover:bg-opacity-90 transition-all font-medium text-center shadow-lg">
               Ver Funciones
             </a>
           </div>
-          
-          <div class="flex items-center gap-4 text-sm text-slate-500">
-            <div class="flex -space-x-2">
-              <div class="w-8 h-8 rounded-full bg-slate-300 border-2 border-white"></div>
-              <div class="w-8 h-8 rounded-full bg-teal-300 border-2 border-white"></div>
-              <div class="w-8 h-8 rounded-full bg-blue-300 border-2 border-white"></div>
-            </div>
-            <p>+500 usuarios ahorrando ya</p>
-          </div>
         </div>
         
-        <!-- Right Content - WhatsApp Mockup -->
-        <div class="relative">
-          <div class="absolute inset-0 bg-gradient-to-r from-teal-400/20 to-blue-400/20 rounded-3xl blur-3xl"></div>
-          <div class="relative bg-white rounded-3xl shadow-2xl p-4 max-w-sm mx-auto">
-            <!-- WhatsApp Header -->
-            <div class="bg-teal-600 text-white p-4 rounded-t-2xl flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                </svg>
-              </div>
-              <div>
-                <p class="font-semibold">SmartSavings</p>
-                <p class="text-xs text-teal-100">en línea</p>
-              </div>
-            </div>
-            
-            <!-- Chat Messages -->
-            <div class="bg-[#E5DDD5] p-4 space-y-3 rounded-b-2xl min-h-[400px]">
-              <!-- Bot Message -->
-              <div class="flex justify-start">
-                <div class="bg-white rounded-lg rounded-tl-none p-3 max-w-[80%] shadow-sm">
-                  <p class="text-sm text-gray-800">☀️ <strong>Pausa financiera.</strong></p>
-                  <p class="text-sm text-gray-800 mt-1">¿Hiciste algún gasto esta mañana?</p>
-                  <p class="text-xs text-gray-400 mt-1">09:00</p>
-                </div>
-              </div>
-              
-              <!-- Quick Reply Buttons -->
-              <div class="flex flex-wrap gap-2">
-                <button class="bg-teal-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-teal-700 transition-colors">
-                  📝 Registrar gasto
-                </button>
-                <button class="bg-white text-slate-700 px-4 py-2 rounded-full text-sm font-medium border border-gray-200 hover:bg-gray-50 transition-colors">
-                  📊 Ver balance
-                </button>
-              </div>
-              
-              <!-- User Voice Message -->
-              <div class="flex justify-end">
-                <div class="bg-blue-100 rounded-lg rounded-tr-none p-3 max-w-[80%]">
-                  <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-                      </svg>
-                    </div>
-                    <div class="flex-1">
-                      <div class="flex items-center gap-1">
-                        <div class="h-1 w-16 bg-blue-400 rounded-full"></div>
-                        <span class="text-xs text-gray-600">0:08</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Bot Response -->
-              <div class="flex justify-start">
-                <div class="bg-white rounded-lg rounded-tl-none p-3 max-w-[80%] shadow-sm">
-                  <p class="text-sm text-gray-800">🎤 <strong>Audio procesado:</strong></p>
-                  <p class="text-sm text-gray-800 mt-1">"Café y pan $12.500"</p>
-                  <p class="text-xs text-gray-400 mt-1">✓ Transcripción automática</p>
-                  <p class="text-xs text-gray-400">✓ Categorizado: Alimentación</p>
-                  <p class="text-xs text-gray-400 mt-1">09:05</p>
-                </div>
-              </div>
-            </div>
-          </div>
+        <!-- Right Content - 3D Image -->
+        <div class="relative flex justify-center lg:justify-end items-center">
+          <img src="/hero-image.png" alt="SmartSavings 3D Assistant" class="max-w-[120%] lg:max-w-[140%] w-auto object-contain transform translate-x-4 lg:translate-x-12 translate-y-8 drop-shadow-2xl hero-float" />
         </div>
       </div>
     </div>
+    
+    <!-- Inline style for floating animation -->
+    <style>
+      .hero-float {
+        animation: heroFloat 6s ease-in-out infinite;
+      }
+      @keyframes heroFloat {
+        0% { transform: translateY(0rem) translateX(3rem); }
+        50% { transform: translateY(-1rem) translateX(3rem); }
+        100% { transform: translateY(0rem) translateX(3rem); }
+      }
+    </style>
   </section>
 
   <!-- Features Section -->
