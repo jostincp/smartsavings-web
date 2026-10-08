@@ -1,0 +1,78 @@
+---
+// FaqSection.astro
+---
+
+<section id="faq" class="py-24 bg-[#EFF5F8] relative">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Section Header -->
+    <div class="text-center max-w-2xl mx-auto mb-16 space-y-4">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#6BA5C8]/40 shadow-xs text-xs font-bold text-[#2C4A5E]">
+        <span class="w-2 h-2 rounded-full bg-[#6BA5C8]"></span>
+        <span>RESPUESTAS CLARAS</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#2C4A5E] tracking-tight">
+        Preguntas <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#6BA5C8] to-[#7FBDA3]">Frecuentes</span>
+      </h2>
+      <p class="text-base sm:text-lg text-[#4A5568]">
+        Todo lo que necesitas saber antes de empezar a controlar tus gastos en WhatsApp.
+      </p>
+    </div>
+
+    <!-- Accordion Items -->
+    <div class="space-y-4">
+      
+      <details class="group glass-panel rounded-2xl p-5 sm:p-6 shadow-sm border border-white cursor-pointer transition-all">
+        <summary class="flex justify-between items-center font-bold text-base sm:text-lg text-[#2C4A5E] list-none select-none">
+          <span>¿Necesito descargar alguna aplicación o registrarme en una web?</span>
+          <span class="text-xl text-[#6BA5C8] group-open:rotate-45 transition-transform duration-200">+</span>
+        </summary>
+        <p class="mt-3 text-xs sm:text-sm text-[#4A5568] leading-relaxed border-t border-slate-100 pt-3">
+          No. SmartSavings opera al 100% dentro de tu WhatsApp oficial. No tienes que descargar nada de la App Store, ni lidiar con actualizaciones o logins complicados. Tu cuenta se vincula automáticamente a tu número de WhatsApp.
+        </p>
+      </details>
+
+      <details class="group glass-panel rounded-2xl p-5 sm:p-6 shadow-sm border border-white cursor-pointer transition-all">
+        <summary class="flex justify-between items-center font-bold text-base sm:text-lg text-[#2C4A5E] list-none select-none">
+          <span>¿Es seguro? ¿Tienen acceso a mis cuentas bancarias?</span>
+          <span class="text-xl text-[#6BA5C8] group-open:rotate-45 transition-transform duration-200">+</span>
+        </summary>
+        <p class="mt-3 text-xs sm:text-sm text-[#4A5568] leading-relaxed border-t border-slate-100 pt-3">
+          Totalmente seguro. <strong>Nunca solicitamos contraseñas, claves dinámicas ni acceso a tu banco</strong>. Solo registras los montos y conceptos que tú decides compartir de forma voluntaria. La información se almacena con altos estándares de seguridad en PostgreSQL (Supabase) con cifrado en reposo y en tránsito.
+        </p>
+      </details>
+
+      <details class="group glass-panel rounded-2xl p-5 sm:p-6 shadow-sm border border-white cursor-pointer transition-all">
+        <summary class="flex justify-between items-center font-bold text-base sm:text-lg text-[#2C4A5E] list-none select-none">
+          <span>¿Cómo funciona el registro de facturas físicas con IA?</span>
+          <span class="text-xl text-[#6BA5C8] group-open:rotate-45 transition-transform duration-200">+</span>
+        </summary>
+        <p class="mt-3 text-xs sm:text-sm text-[#4A5568] leading-relaxed border-t border-slate-100 pt-3">
+          Simplemente toma una foto a la tirilla o recibo de compra desde WhatsApp. Nuestro modelo multimodal <strong>Google Gemini 2.5 Flash</strong> procesa la imagen, extrae el total pagado, identifica el establecimiento (ej: Éxito, D1, Carulla) y clasifica automáticamente los productos por ítem en la categoría correspondiente.
+        </p>
+      </details>
+
+      <details class="group glass-panel rounded-2xl p-5 sm:p-6 shadow-sm border border-white cursor-pointer transition-all">
+        <summary class="flex justify-between items-center font-bold text-base sm:text-lg text-[#2C4A5E] list-none select-none">
+          <span>¿Qué pasa si me equivoco en un monto o descripción?</span>
+          <span class="text-xl text-[#6BA5C8] group-open:rotate-45 transition-transform duration-200">+</span>
+        </summary>
+        <p class="mt-3 text-xs sm:text-sm text-[#4A5568] leading-relaxed border-t border-slate-100 pt-3">
+          SmartSavings cuenta con corrección conversacional inteligente. Solo responde al bot cosas como <em>"no, eran 15 mil"</em> o <em>"borra el último gasto"</em>. El bot entenderá tu corrección, ajustará el registro en la base de datos y recalculará tu saldo disponible al instante.
+        </p>
+      </details>
+
+      <details class="group glass-panel rounded-2xl p-5 sm:p-6 shadow-sm border border-white cursor-pointer transition-all">
+        <summary class="flex justify-between items-center font-bold text-base sm:text-lg text-[#2C4A5E] list-none select-none">
+          <span>¿A qué horas recibo recordatorios y cómo me ayudan a ahorrar?</span>
+          <span class="text-xl text-[#6BA5C8] group-open:rotate-45 transition-transform duration-200">+</span>
+        </summary>
+        <p class="mt-3 text-xs sm:text-sm text-[#4A5568] leading-relaxed border-t border-slate-100 pt-3">
+          Para que ningún gasto hormiga se escape, el bot envía un recordatorio discreto con botones interactivos a las <strong>2:00 PM</strong> (cierre del mediodía) y a las <strong>8:00 PM</strong> (cierre de la tarde). A las <strong>9:00 PM</strong> recibes tu balance diario con las cifras exactas y el porcentaje de presupuesto que te queda para terminar la quincena en verde.
+        </p>
+      </details>
+
+    </div>
+
+  </div>
+</section>

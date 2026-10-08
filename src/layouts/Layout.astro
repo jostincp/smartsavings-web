@@ -1,40 +1,48 @@
 ---
 interface Props {
-  title: string;
+  title?: string;
+  description?: string;
 }
 
-const { title } = Astro.props;
+const { 
+  title = "SmartSavings 💰 | Tu Asistente Financiero Inteligente en WhatsApp",
+  description = "Detén la fuga de dinero quincenal. Registra gastos por voz, texto o foto de recibos directamente en WhatsApp con IA (DeepSeek, Gemini 2.5 Flash y Whisper)."
+} = Astro.props;
+
 import '../styles/global.css';
 ---
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="SmartSavings - Tu asistente financiero inteligente en WhatsApp. Controla tus gastos sin fricción." />
-    <meta name="keywords" content="finanzas personales, ahorro, WhatsApp, asistente financiero, gastos" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content="finanzas personales, control de gastos, WhatsApp bot, n8n, inteligencia artificial, ahorro, presupuesto, DeepSeek, Whisper, Gemini" />
+    <meta name="author" content="SmartSavings" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="/images/hero-reference.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content="/images/hero-reference.png" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Meta Pixel - Listo para activar -->
-    <!--
-    <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', 'YOUR_PIXEL_ID');
-      fbq('track', 'PageView');
-    </script>
-    -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </head>
-  <body class="font-sans antialiased">
+  <body class="bg-[#F6FAFC] text-[#2C4A5E] antialiased selection:bg-[#7FBDA3]/30 selection:text-[#182C38]">
     <slot />
   </body>
 </html>

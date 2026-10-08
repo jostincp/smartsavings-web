@@ -1,0 +1,378 @@
+---
+// SimulatorWhatsApp.astro
+---
+
+<section id="simulador" class="py-24 bg-[#EFF5F8] relative overflow-hidden">
+  
+  <!-- Ambient background glow -->
+  <div class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-radial-hero rounded-full blur-3xl opacity-60"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#7FBDA3]/40 shadow-xs text-xs font-bold text-[#2C4A5E]">
+        <span class="w-2 h-2 rounded-full bg-[#2ECC71]"></span>
+        <span>EXPERIENCIA EN VIVO</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#2C4A5E] tracking-tight">
+        Pruébalo ahora mismo: <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#6BA5C8] to-[#7FBDA3]">Cero fricción</span> en WhatsApp
+      </h2>
+      <p class="text-base sm:text-lg text-[#4A5568]">
+        Haz clic en cualquiera de los ejemplos o escribe tu propio mensaje para ver cómo la Inteligencia Artificial procesa tus gastos al instante.
+      </p>
+    </div>
+
+    <!-- Main Grid: Phone Simulator (Left) + Real-time Financial Breakdown (Right) -->
+    <div class="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      
+      <!-- Left Column: Realistic Phone Mockup (Cols 1-7) -->
+      <div class="lg:col-span-7 flex flex-col items-center">
+        
+        <!-- Phone Frame with 3D Depth & Shadow -->
+        <div class="w-full max-w-[420px] bg-[#111B21] rounded-[42px] p-3.5 shadow-2xl shadow-[#2C4A5E]/20 border-4 border-[#2A3942] relative">
+          
+          <!-- Phone Speaker & Camera Notch -->
+          <div class="w-28 h-4 bg-[#1F2C34] rounded-full mx-auto mb-2 flex items-center justify-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-[#0C1317]"></div>
+            <div class="w-1.5 h-1.5 rounded-full bg-[#0F171E]"></div>
+          </div>
+
+          <!-- Screen Container -->
+          <div class="bg-[#ECE5DD] rounded-[32px] overflow-hidden flex flex-col h-[520px] relative border border-[#222E35]">
+            
+            <!-- WhatsApp Chat Top Bar -->
+            <div class="bg-[#005C4B] px-4 py-3 flex items-center justify-between text-white shadow-md z-10">
+              <div class="flex items-center gap-3">
+                <div class="relative w-9 h-9 rounded-full bg-white/20 p-0.5 border border-white/40 overflow-hidden flex items-center justify-center">
+                  <img src="/logo.svg" alt="SmartSavings Icon" class="w-full h-full object-contain" />
+                </div>
+                <div>
+                  <div class="flex items-center gap-1.5 font-bold text-sm leading-tight">
+                    <span>SmartSavings</span>
+                    <span class="w-3.5 h-3.5 rounded-full bg-white text-[#005C4B] flex items-center justify-center text-[9px] font-black">✓</span>
+                  </div>
+                  <div class="text-[11px] text-emerald-100 flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#25D366]"></span>
+                    <span>en línea · IA activa</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 text-white/80 text-sm">
+                <span>📹</span>
+                <span>📞</span>
+                <span>⋮</span>
+              </div>
+            </div>
+
+            <!-- WhatsApp Chat Background Texture & Message Area -->
+            <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 text-xs bg-[radial-gradient(#d4dad9_1px,transparent_1px)] [background-size:16px_16px]">
+              
+              <!-- System Security Note -->
+              <div class="text-center my-2">
+                <span class="bg-[#FFEECD] text-[#54656F] text-[10px] px-3 py-1 rounded-lg shadow-xs border border-[#F0DCB5]">
+                  🔒 Mensajes cifrados de extremo a extremo. Cero datos bancarios compartidos.
+                </span>
+              </div>
+
+              <!-- Initial Welcome Message from Bot -->
+              <div class="flex justify-start">
+                <div class="bg-white rounded-2xl rounded-tl-xs p-3 max-w-[85%] shadow-sm text-[#111B21] space-y-1">
+                  <p class="font-bold text-[#005C4B]">👋 ¡Hola, Jostin!</p>
+                  <p class="leading-relaxed">
+                    Soy <strong>SmartSavings</strong>. Cuéntame qué gastaste hoy o envíame un audio o la foto de tu recibo para registrarlo sin enredos.
+                  </p>
+                  <div class="text-[9px] text-[#667781] text-right">08:15 AM</div>
+                </div>
+              </div>
+
+              <!-- Dynamic Interactive Messages will append here -->
+            </div>
+
+            <!-- Typing Indicator (Hidden by default) -->
+            <div id="typingIndicator" class="hidden px-4 py-2 bg-transparent">
+              <div class="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-xs px-3 py-1.5 rounded-full shadow-xs text-xs text-[#54656F]">
+                <span class="w-1.5 h-1.5 bg-[#00A884] rounded-full animate-bounce"></span>
+                <span class="w-1.5 h-1.5 bg-[#00A884] rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span class="w-1.5 h-1.5 bg-[#00A884] rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                <span class="text-[11px] font-medium ml-1">SmartSavings está analizando...</span>
+              </div>
+            </div>
+
+            <!-- WhatsApp Input Footer Bar -->
+            <div class="bg-[#F0F2F5] p-2.5 flex items-center gap-2 border-t border-[#D1D7DB]">
+              <div class="flex-1 bg-white rounded-full px-4 py-2 flex items-center justify-between shadow-xs">
+                <input 
+                  id="chatCustomInput"
+                  type="text" 
+                  placeholder="Escribe un gasto (ej: Café $6.000)..." 
+                  class="w-full text-xs text-[#111B21] bg-transparent focus:outline-none"
+                />
+                <span class="text-slate-400 text-sm ml-1 cursor-pointer">📎</span>
+              </div>
+              <button 
+                id="sendCustomBtn"
+                class="w-9 h-9 rounded-full bg-[#00A884] text-white flex items-center justify-center hover:bg-[#008f6f] transition-colors shadow-sm focus:outline-none"
+                aria-label="Enviar"
+              >
+                <svg class="w-4 h-4 fill-current translate-x-0.5" viewBox="0 0 24 24">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Quick Action Scenario Chips (Click to test) -->
+        <div class="w-full max-w-[440px] mt-6">
+          <p class="text-xs font-bold text-[#2C4A5E] uppercase tracking-wider mb-2.5 text-center">
+            Prueba estos escenarios con 1 clic:
+          </p>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            
+            <button 
+              class="scenario-btn p-2.5 rounded-xl bg-white hover:bg-[#6BA5C8]/10 border border-slate-200 hover:border-[#6BA5C8] text-left transition-all shadow-xs group"
+              data-text="Almorcé corrientazo ejecutivo $18.000"
+              data-reply="💰 *Gasto registrado exitosamente*\n• Monto: $18,000 COP\n• Categoría: 🍔 Alimentación\n• Descripción: Almuerzo corrientazo\n\n📊 *Disponible en quincena:* $782,000 COP"
+              data-cat="Alimentación"
+              data-amount="18000"
+            >
+              <div class="font-bold text-[#2C4A5E] group-hover:text-[#6BA5C8] flex items-center gap-1.5">
+                <span>🍔</span> Texto directo
+              </div>
+              <div class="text-[11px] text-[#4A5568] truncate">"Almuerzo $18.000"</div>
+            </button>
+
+            <button 
+              class="scenario-btn p-2.5 rounded-xl bg-white hover:bg-[#7FBDA3]/10 border border-slate-200 hover:border-[#7FBDA3] text-left transition-all shadow-xs group"
+              data-text="🎙️ [Audio Whisper 4s]: 'Pagué 12 mil de taxi al centro'"
+              data-reply="🎙️ *Audio transcrito con Whisper*\n💰 *Gasto registrado*\n• Monto: $12,000 COP\n• Categoría: 🚕 Transporte\n• Detalle: Taxi al centro\n\n📊 *Disponible en quincena:* $770,000 COP"
+              data-cat="Transporte"
+              data-amount="12000"
+            >
+              <div class="font-bold text-[#2C4A5E] group-hover:text-[#7FBDA3] flex items-center gap-1.5">
+                <span>🎙️</span> Nota de voz
+              </div>
+              <div class="text-[11px] text-[#4A5568] truncate">"Taxi al centro $12.000"</div>
+            </button>
+
+            <button 
+              class="scenario-btn p-2.5 rounded-xl bg-white hover:bg-[#D4A574]/10 border border-slate-200 hover:border-[#D4A574] text-left transition-all shadow-xs group"
+              data-text="🧾 [Foto de factura D1 por $45.600]"
+              data-reply="🧾 *Factura procesada con Gemini 2.5 Flash*\n• Establecimiento: D1\n• Total: $45,600 COP\n• Ítems detectados: Leche, Huevos, Pan, Café\n• Categoría: 🛒 Mercado y Despensa\n\n📊 *Disponible en quincena:* $724,400 COP"
+              data-cat="Mercado"
+              data-amount="45600"
+            >
+              <div class="font-bold text-[#2C4A5E] group-hover:text-[#D4A574] flex items-center gap-1.5">
+                <span>🧾</span> Foto de factura
+              </div>
+              <div class="text-[11px] text-[#4A5568] truncate">"Recibo supermercado D1"</div>
+            </button>
+
+            <button 
+              class="scenario-btn p-2.5 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-[#2ECC71] text-left transition-all shadow-xs group"
+              data-text="No, en el almuerzo eran 15 mil, no 18 mil"
+              data-reply="✏️ *Gasto corregido exitosamente*\n• Monto anterior: $18,000 COP\n• Monto nuevo: $15,000 COP\n• Categoría: 🍔 Alimentación\n\n✓ *Se reembolsaron $3,000 COP a tu balance proyectado.*"
+              data-cat="Alimentación"
+              data-amount="-3000"
+            >
+              <div class="font-bold text-[#2C4A5E] group-hover:text-[#2ECC71] flex items-center gap-1.5">
+                <span>✏️</span> Corrección IA
+              </div>
+              <div class="text-[11px] text-[#4A5568] truncate">"No, eran 15 mil"</div>
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Interactive Real-Time Financial Dashboard (Cols 8-12) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-xl border border-white">
+          
+          <div class="flex items-center justify-between pb-5 border-b border-slate-100">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#7FBDA3]">Panel Financiero en Vivo</span>
+              <h3 class="text-xl sm:text-2xl font-black text-[#2C4A5E]">Quincena Protegida</h3>
+            </div>
+            <div class="w-10 h-10 rounded-2xl bg-[#6BA5C8]/15 flex items-center justify-center text-lg">
+              🛡️
+            </div>
+          </div>
+
+          <!-- Balance Metric Card -->
+          <div class="pt-6 pb-4">
+            <div class="text-xs text-[#4A5568] font-medium mb-1">Saldo Disponible Estimado:</div>
+            <div class="flex items-baseline gap-2">
+              <span id="liveBalanceDisplay" class="text-3xl sm:text-4xl font-extrabold text-[#2C4A5E] tracking-tight">
+                $782,000
+              </span>
+              <span class="text-xs font-semibold text-slate-400">COP</span>
+            </div>
+            <div class="text-[11px] text-[#2ECC71] font-semibold mt-1 flex items-center gap-1">
+              <span>↑</span> <span>8 días restantes para el próximo pago</span>
+            </div>
+          </div>
+
+          <!-- Spending Progress Bar -->
+          <div class="space-y-2 py-4">
+            <div class="flex justify-between text-xs font-semibold">
+              <span class="text-[#2C4A5E]">Presupuesto consumido:</span>
+              <span id="budgetPercentText" class="text-[#6BA5C8]">52% (Dentro de la meta)</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200/60">
+              <div id="budgetProgressBar" class="h-full bg-gradient-to-r from-[#7FBDA3] to-[#6BA5C8] rounded-full transition-all duration-500 w-[52%]"></div>
+            </div>
+          </div>
+
+          <!-- Category Breakdown -->
+          <div class="pt-4 space-y-3">
+            <span class="text-xs font-bold text-[#2C4A5E] uppercase tracking-wider block">
+              Desglose por Categorías Canónicas:
+            </span>
+
+            <div class="space-y-2.5 text-xs">
+              
+              <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50/80 border border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-xs">🍔</span>
+                  <span class="font-medium text-[#2C4A5E]">Alimentación & Cafés</span>
+                </div>
+                <span id="catAlimentacion" class="font-bold text-[#2C4A5E]">$18,000 COP</span>
+              </div>
+
+              <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50/80 border border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">🚕</span>
+                  <span class="font-medium text-[#2C4A5E]">Transporte & Viajes</span>
+                </div>
+                <span id="catTransporte" class="font-bold text-[#2C4A5E]">$12,000 COP</span>
+              </div>
+
+              <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50/80 border border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs">🛒</span>
+                  <span class="font-medium text-[#2C4A5E]">Mercado & Hogar</span>
+                </div>
+                <span id="catMercado" class="font-bold text-[#2C4A5E]">$45,600 COP</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Proactive Notification Simulation -->
+          <div class="mt-6 pt-5 border-t border-slate-100 bg-gradient-to-r from-amber-50/60 to-orange-50/60 rounded-2xl p-4 border border-amber-200/50">
+            <div class="flex items-start gap-3">
+              <span class="text-xl">🔔</span>
+              <div>
+                <h4 class="font-bold text-xs text-[#2C4A5E]">Cierre Automático Proactivo</h4>
+                <p class="text-[11px] text-[#4A5568] mt-0.5 leading-snug">
+                  SmartSavings te enviará un recordatorio a las <strong>2:00 PM</strong> y a las <strong>8:00 PM</strong> con un solo toque para que no olvides registrar nada.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- Interactive Simulator JS Script -->
+<script>
+  const chatMessages = document.getElementById('chatMessages');
+  const typingIndicator = document.getElementById('typingIndicator');
+  const customInput = document.getElementById('chatCustomInput') as HTMLInputElement;
+  const sendBtn = document.getElementById('sendCustomBtn');
+  const scenarioButtons = document.querySelectorAll('.scenario-btn');
+  const liveBalance = document.getElementById('liveBalanceDisplay');
+
+  let currentBalance = 782000;
+
+  function appendUserMessage(text: string) {
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'flex justify-end';
+    msgDiv.innerHTML = `
+      <div class="bg-[#D9FDD3] rounded-2xl rounded-tr-xs p-3 max-w-[85%] shadow-sm text-[#111B21] space-y-1">
+        <p class="leading-relaxed">${text}</p>
+        <div class="text-[9px] text-[#667781] text-right flex items-center justify-end gap-1">
+          <span>${time}</span>
+          <span class="text-[#53BDEB]">✓✓</span>
+        </div>
+      </div>
+    `;
+    chatMessages?.appendChild(msgDiv);
+    chatMessages?.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
+  }
+
+  function appendBotMessage(formattedText: string) {
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'flex justify-start';
+    
+    // Replace markdown bold *text* with <strong>
+    const htmlText = formattedText
+      .replace(/\*(.*?)\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br />');
+
+    msgDiv.innerHTML = `
+      <div class="bg-white rounded-2xl rounded-tl-xs p-3 max-w-[85%] shadow-sm text-[#111B21] space-y-1 border border-slate-100">
+        <div class="leading-relaxed">${htmlText}</div>
+        <div class="text-[9px] text-[#667781] text-right">${time}</div>
+      </div>
+    `;
+    chatMessages?.appendChild(msgDiv);
+    chatMessages?.scrollTo({ top: chatMessages.scrollHeight, behavior: 'smooth' });
+  }
+
+  function triggerBotResponse(userText: string, botReply: string, amountDiff: number = 0) {
+    appendUserMessage(userText);
+    typingIndicator?.classList.remove('hidden');
+
+    setTimeout(() => {
+      typingIndicator?.classList.add('hidden');
+      appendBotMessage(botReply);
+
+      // Update balance if applicable
+      if (amountDiff !== 0 && liveBalance) {
+        currentBalance -= amountDiff;
+        liveBalance.innerText = `$${currentBalance.toLocaleString('es-CO')}`;
+      }
+    }, 700);
+  }
+
+  // Setup preset scenario buttons
+  scenarioButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const text = button.getAttribute('data-text') || '';
+      const reply = button.getAttribute('data-reply') || '';
+      const amount = parseInt(button.getAttribute('data-amount') || '0', 10);
+      triggerBotResponse(text, reply, amount);
+    });
+  });
+
+  // Handle custom input
+  function handleCustomSend() {
+    if (!customInput || !customInput.value.trim()) return;
+    const val = customInput.value.trim();
+    customInput.value = '';
+
+    const defaultReply = `💰 *Gasto detectado y registrado*\n• Mensaje: "${val}"\n• Categoría: ✨ Identificado por DeepSeek\n• Estado: Guardado en tu base de datos de Supabase\n\n📊 *¡Excelente hábito financiero! Sigue así.*`;
+    triggerBotResponse(val, defaultReply, 0);
+  }
+
+  sendBtn?.addEventListener('click', handleCustomSend);
+  customInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') handleCustomSend();
+  });
+</script>

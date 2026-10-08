@@ -1,4 +1,161 @@
 @import "tailwindcss";
 
-html { scroll-behavior: smooth; }
-body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+@layer base {
+  :root {
+    --brand-blue: #6BA5C8;
+    --brand-navy: #2C4A5E;
+    --brand-dark: #182C38;
+    --brand-green: #7FBDA3;
+    --brand-success: #2ECC71;
+    --brand-gold: #D4A574;
+    --brand-gold-light: #FBE5C8;
+    --brand-cream: #F5F9FA;
+    --brand-border: rgba(107, 165, 200, 0.18);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #F6FAFC;
+    color: #2C4A5E;
+    overflow-x: hidden;
+  }
+}
+
+/* 3D Depth & Perspective */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 20px 40px -15px rgba(44, 74, 94, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.6) inset;
+}
+
+.glass-panel-dark {
+  background: rgba(24, 44, 56, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(107, 165, 200, 0.25);
+}
+
+/* Subtle Glowing Dots Background Pattern */
+.bg-grid-dots {
+  background-image: radial-gradient(rgba(107, 165, 200, 0.18) 1.2px, transparent 1.2px);
+  background-size: 28px 28px;
+}
+
+.bg-radial-hero {
+  background: radial-gradient(circle at 75% 35%, rgba(212, 165, 116, 0.15) 0%, rgba(127, 189, 163, 0.12) 30%, rgba(246, 250, 252, 0) 70%);
+}
+
+/* 3D Floating Animations */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(1.2deg);
+  }
+}
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(12px) rotate(-1deg);
+  }
+}
+
+@keyframes coinBob {
+  0%, 100% {
+    transform: translateY(0px) rotateY(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) rotateY(180deg) scale(1.05);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes dashFlow {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 7s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 6s ease-in-out infinite;
+}
+
+.animate-coin-bob {
+  animation: coinBob 5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-dash-flow {
+  stroke-dasharray: 8 6;
+  animation: dashFlow 2s linear infinite;
+}
+
+/* 3D interactive card tilt transition */
+.card-3d-tilt {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #EDF3F7;
+}
+::-webkit-scrollbar-thumb {
+  background: #A6C4D7;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7DA6C0;
+}
