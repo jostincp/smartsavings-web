@@ -1,0 +1,1312 @@
+---
+/**
+ * Hero product demo: a WhatsApp chat where the user sends a voice note,
+ * a receipt photo or a text, the AI extracts the expense and the user
+ * confirms (or corrects) it. Driven by a small pause-aware timeline.
+ */
+import Icon, { type IconName } from './ui/Icon.astro';
+import Logo from './ui/Logo.astro';
+
+const uid = 'wa-demo';
+
+const tabs: { id: string; icon: IconName; title: string; short: string; example: string }[] = [
+  { id: 'voz', icon: 'mic', title: 'Nota de voz', short: 'Audio', example: 'Almorcé 18 mil con Nequi' },
+  { id: 'foto', icon: 'camera', title: 'Foto del recibo', short: 'Foto', example: 'Recibo de Tiendas D1' },
+  { id: 'texto', icon: 'type', title: 'Mensaje de texto', short: 'Texto', example: 'uber a la oficina 12.500' },
+];
+
+const steps: { n: number; icon: IconName; label: string }[] = [
+  { n: 1, icon: 'send', label: 'Envías' },
+  { n: 2, icon: 'sparkles', label: 'La IA extrae' },
+  { n: 3, icon: 'check-circle', label: 'Confirmas' },
+];
+
+const fields: { key: string; label: string; skeleton: string }[] = [
+  { key: 'amount', label: 'Monto', skeleton: 'w-20' },
+  { key: 'category', label: 'Categoría', skeleton: 'w-24' },
+  { key: 'detail', label: 'Descripción', skeleton: 'w-28' },
+  { key: 'method', label: 'Método de pago', skeleton: 'w-16' },
+  { key: 'date', label: 'Fecha', skeleton: 'w-24' },
+  { key: 'source', label: 'Fuente', skeleton: 'w-32' },
+];
+
+const receipt = [
+  { item: 'Leche entera 1 L', price: '$4.900' },
+  { item: 'Huevos x30', price: '$17.500' },
+  { item: 'Pan tajado', price: '$6.200' },
+  { item: 'Café molido 500 g', price: '$17.000' },
+];
+
+const wave = [30, 55, 80, 45, 95, 60, 35, 70, 100, 65, 40, 85, 50, 30, 75, 90, 45, 60, 35, 80, 55, 40, 70, 30, 50, 35];
+const categoryIcons: IconName[] = ['utensils', 'shopping-cart', 'car'];
+
+// Yesterday's 9:00 p. m. summary shown at the top of the chat (ends at the $800.000 starting balance).
+const summary = [
+  { label: 'Alimentación', value: '$32.000' },
+  { label: 'Transporte', value: '$14.500' },
+];
+---
+
+<div
+  class="group/demo relative w-full"
+  data-demo
+  data-autoplay="true"
+  data-frozen="true"
+  data-static="false"
+  role="region"
+  aria-label="Demostración de SmartSavings en WhatsApp"
+  aria-describedby={`${uid}-desc`}
+>
+  <p id={`${uid}-desc`} class="sr-only">
+    Simulación de un chat: envías un gasto como nota de voz, foto del recibo o texto; la IA extrae monto, categoría,
+    descripción, método de pago y fecha; y tú confirmas o corriges el registro. La demostración avanza sola y puedes
+    pausarla.
+  </p>
+
+  <div class="relative overflow-hidden rounded-3xl border border-line bg-canvas">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-grid mask-radial-fade"></div>
+
+    <div
+      class="relative grid gap-5 p-4 sm:p-6 md:grid-cols-[300px_minmax(0,1fr)] md:grid-rows-[auto_1fr] md:gap-x-8 md:gap-y-5 lg:p-8 xl:grid-cols-[minmax(0,1fr)_320px_minmax(0,1fr)] xl:grid-rows-1 xl:items-center"
+    >
+      <!-- Scenario selector -->
+      <div class="flex min-w-0 flex-col md:col-start-2 md:row-start-1 xl:col-start-1">
+        <p class="hidden font-mono text-[11px] tracking-wider text-muted uppercase xl:block">Elige un ejemplo</p>
+        <div class="flex items-center gap-2 xl:mt-4 xl:flex-col xl:items-stretch xl:gap-0">
+          <div
+            role="tablist"
+            aria-label="Formas de registrar un gasto"
+            aria-orientation="horizontal"
+            data-tablist
+            class="flex min-w-0 flex-1 gap-1 rounded-full border border-line bg-line-soft/70 p-1 xl:flex-none xl:flex-col xl:gap-2 xl:rounded-none xl:border-0 xl:bg-transparent xl:p-0"
+          >
+            {
+              tabs.map((tab, i) => (
+                <button
+                  type="button"
+                  role="tab"
+                  id={`${uid}-tab-${tab.id}`}
+                  data-tab={tab.id}
+                  aria-selected={i === 0 ? 'true' : 'false'}
+                  aria-controls={`${uid}-screen`}
+                  tabindex={i === 0 ? 0 : -1}
+                  class="group/tab relative flex h-10 min-w-0 flex-1 items-center justify-center gap-1.5 overflow-hidden rounded-full px-2 text-[13px] font-medium text-muted transition-[color,background-color,border-color,box-shadow] duration-200 hover:text-ink aria-selected:bg-surface aria-selected:text-ink aria-selected:shadow-card xl:h-auto xl:flex-none xl:justify-start xl:gap-3.5 xl:rounded-2xl xl:border xl:border-transparent xl:p-3.5 xl:text-left xl:hover:bg-surface/70 xl:aria-selected:border-ink/15 xl:aria-selected:bg-surface"
+                >
+                  <span class="inline-flex shrink-0 items-center justify-center xl:size-10 xl:rounded-xl xl:border xl:border-line xl:bg-canvas xl:text-muted xl:group-aria-selected/tab:bg-surface xl:group-aria-selected/tab:text-ink">
+                    <Icon name={tab.icon} class="size-4 xl:size-[18px]" />
+                  </span>
+                  <span class="flex min-w-0 flex-col">
+                    <span class="truncate xl:hidden">{tab.short}</span>
+                    <span class="hidden text-[15px] tracking-[-0.01em] text-body group-aria-selected/tab:text-ink xl:block">
+                      {tab.title}
+                    </span>
+                    <span class="mt-0.5 hidden truncate text-sm font-normal text-muted xl:block">«{tab.example}»</span>
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    class="pointer-events-none absolute inset-x-5 bottom-[3px] h-0.5 overflow-hidden rounded-full opacity-0 group-aria-selected/tab:opacity-100 group-data-[autoplay=false]/demo:invisible xl:inset-x-0 xl:bottom-0 xl:rounded-none xl:bg-line-soft"
+                  >
+                    <span data-progress class="block h-full origin-left bg-ink/60 xl:bg-ink" style="transform: scaleX(0)"></span>
+                  </span>
+                </button>
+              ))
+            }
+          </div>
+
+          <div class="flex shrink-0 items-center gap-2 xl:mt-5">
+            <button
+              type="button"
+              data-pause
+              aria-label="Pausar demostración"
+              class="inline-flex size-10 shrink-0 items-center justify-center gap-2 rounded-full border border-line bg-surface text-sm font-medium text-ink shadow-card transition-colors duration-200 hover:bg-canvas xl:w-auto xl:px-4"
+            >
+              <span data-ico-pause class="inline-flex"><Icon name="pause" class="size-4" /></span>
+              <span data-ico-play class="inline-flex" hidden><Icon name="play" class="size-4" /></span>
+              <span data-pause-text class="hidden xl:inline">Pausar</span>
+            </button>
+            <button
+              type="button"
+              data-repeat
+              aria-label="Repetir ejemplo"
+              class="hidden size-10 shrink-0 items-center justify-center gap-2 rounded-full text-sm font-medium text-body transition-colors duration-200 hover:bg-surface hover:text-ink sm:inline-flex xl:w-auto xl:px-4"
+            >
+              <Icon name="rotate-ccw" class="size-4" />
+              <span class="hidden xl:inline">Repetir</span>
+            </button>
+          </div>
+        </div>
+        <p class="mt-5 hidden max-w-[17rem] gap-2 text-sm leading-relaxed text-muted xl:flex">
+          <Icon name="info" class="mt-0.5 size-4 shrink-0" />
+          <span>Toca <span class="font-medium text-ink">Confirmar</span> o <span class="font-medium text-ink">Editar</span> dentro del chat para probarlo tú.</span>
+        </p>
+      </div>
+
+      <!-- Phone -->
+      <div class="flex items-center justify-center md:col-start-1 md:row-span-2 md:row-start-1 xl:col-start-2 xl:row-span-1">
+        <div class="w-full max-w-[320px] rounded-[2.75rem] bg-zinc-950 p-2.5 shadow-float ring-1 ring-black/10 md:max-w-none">
+          <div
+            id={`${uid}-screen`}
+            role="tabpanel"
+            aria-labelledby={`${uid}-tab-voz`}
+            class="relative flex h-[560px] flex-col overflow-hidden rounded-[2.25rem] bg-wa-bg md:h-[600px] xl:h-[640px]"
+          >
+            <span aria-hidden="true" class="absolute top-2.5 left-1/2 z-20 h-[22px] w-[78px] -translate-x-1/2 rounded-full bg-zinc-950"></span>
+
+            <div aria-hidden="true" class="flex h-10 shrink-0 items-center justify-between bg-white px-7 pt-1 text-[12.5px] font-semibold text-wa-text">
+              <span data-clock class="tabular">12:40</span>
+              <span class="flex items-center gap-1.5">
+                <span class="flex items-end gap-[2px]">
+                  <span class="h-1 w-[3px] rounded-[1px] bg-wa-text"></span>
+                  <span class="h-1.5 w-[3px] rounded-[1px] bg-wa-text"></span>
+                  <span class="h-2 w-[3px] rounded-[1px] bg-wa-text"></span>
+                  <span class="h-2.5 w-[3px] rounded-[1px] bg-wa-text/30"></span>
+                </span>
+                <span class="relative flex h-[11px] w-[22px] items-center rounded-[3px] border border-wa-text/40 p-[1.5px]">
+                  <span class="h-full w-3/4 rounded-[1.5px] bg-wa-text"></span>
+                  <span class="absolute top-1/2 -right-[3.5px] h-1 w-[2px] -translate-y-1/2 rounded-r-sm bg-wa-text/40"></span>
+                </span>
+              </span>
+            </div>
+
+            <div class="flex shrink-0 items-center gap-2 border-b border-black/5 bg-white px-2.5 pt-1 pb-2">
+              <Icon name="chevron-left" class="size-5 text-wa-header" />
+              <Logo showWordmark={false} />
+              <div class="min-w-0 flex-1 leading-tight">
+                <p class="flex items-center gap-1 text-[14px] font-semibold text-wa-text">
+                  SmartSavings
+                  <span class="inline-flex size-3.5 items-center justify-center rounded-full bg-brand-500 text-white">
+                    <Icon name="check" class="size-2.5" strokeWidth={3.5} />
+                  </span>
+                  <span class="sr-only">, cuenta verificada</span>
+                </p>
+                <p data-presence data-typing="false" class="text-[11.5px] text-wa-meta data-[typing=true]:text-wa-header">
+                  en línea
+                </p>
+              </div>
+              <Icon name="video" class="size-5 text-wa-header" />
+              <Icon name="more-vertical" class="size-5 text-wa-header" />
+            </div>
+
+            <div class="relative min-h-0 flex-1 overflow-hidden">
+              <div
+                data-log
+                data-fading="false"
+                role="log"
+                aria-live="off"
+                aria-label="Conversación de ejemplo"
+                class="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 px-3 pt-8 pb-3 transition-opacity duration-200 data-[fading=true]:opacity-0"
+              >
+                <p class="mx-auto mb-1 rounded-md bg-white/90 px-2.5 py-0.5 text-[11px] font-medium text-wa-meta shadow-card">Ayer</p>
+                <div class="w-[86%] self-start rounded-lg rounded-tl-sm bg-wa-in px-2.5 py-2 text-[13px] leading-snug text-wa-text shadow-card">
+                  <p class="flex items-center gap-1.5 font-medium">
+                    <Icon name="bar-chart" class="size-4 text-brand-600" />
+                    Tu resumen del día
+                  </p>
+                  <dl class="mt-1.5 space-y-0.5 text-[12px]">
+                    {
+                      summary.map((row) => (
+                        <div class="flex justify-between gap-3">
+                          <dt class="text-wa-meta">{row.label}</dt>
+                          <dd class="tabular">{row.value}</dd>
+                        </div>
+                      ))
+                    }
+                    <div class="flex justify-between gap-3 border-t border-black/5 pt-0.5 font-medium">
+                      <dt>Total</dt>
+                      <dd class="tabular">$46.500</dd>
+                    </div>
+                  </dl>
+                  <p class="mt-1.5 text-[12px] text-wa-meta">
+                    Te quedan <span class="tabular font-semibold text-wa-text">$800.000</span> en tu quincena.
+                  </p>
+                  <p class="text-right text-[10.5px] text-wa-meta">9:00 p. m.</p>
+                </div>
+                <p class="mx-auto my-1 rounded-md bg-white/90 px-2.5 py-0.5 text-[11px] font-medium text-wa-meta shadow-card">Hoy</p>
+              </div>
+              <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-0 h-10 bg-linear-to-b from-wa-bg to-transparent"></div>
+            </div>
+
+            <div aria-hidden="true" class="relative flex shrink-0 items-center gap-1.5 px-2 pt-1.5 pb-6">
+              <div class="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-full bg-white pr-3 pl-3.5 shadow-card">
+                <div data-input-text class="flex min-w-0 flex-1 items-center overflow-hidden text-[13px] whitespace-nowrap">
+                  <span data-ph class="text-wa-meta">Mensaje</span>
+                  <span data-typed class="text-wa-text" hidden></span>
+                  <span data-caret class="ml-px inline-block h-4 w-[1.5px] shrink-0 animate-caret bg-wa-header" hidden></span>
+                  <span data-rec class="flex items-center gap-1.5 text-wa-text" hidden>
+                    <span class="size-2 animate-pulse rounded-full bg-red-500"></span>
+                    <span data-rec-time class="tabular">0:00</span>
+                    <span class="text-wa-meta">Grabando…</span>
+                  </span>
+                </div>
+                <span data-attach class="inline-flex items-center gap-2.5 text-wa-meta">
+                  <Icon name="paperclip" class="size-[18px]" />
+                  <span data-cam class="inline-flex transition-colors duration-200 data-[active=true]:text-wa-header">
+                    <Icon name="camera" class="size-[18px]" />
+                  </span>
+                </span>
+              </div>
+              <span
+                data-send-btn
+                data-rec="false"
+                class="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-wa-teal text-white transition-transform duration-200 data-[rec=true]:scale-110"
+              >
+                <span data-ico-mic class="inline-flex"><Icon name="mic" class="size-[18px]" strokeWidth={2} /></span>
+                <span data-ico-send class="inline-flex" hidden><Icon name="send" class="size-[17px]" strokeWidth={2} /></span>
+              </span>
+              <span class="absolute bottom-2 left-1/2 h-1 w-28 -translate-x-1/2 rounded-full bg-wa-text/80"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Extraction panel -->
+      <div class="min-w-0 md:col-start-2 md:row-start-2 xl:col-start-3 xl:row-start-1">
+        <div data-panel data-status="idle" class="group/panel flex h-full flex-col rounded-2xl border border-line bg-surface p-5 shadow-card">
+          <div class="flex items-start gap-3">
+            <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-canvas text-ink">
+              <Icon name="sparkles" class="size-5" />
+            </span>
+            <div class="min-w-0">
+              <p class="text-[15px] font-medium tracking-[-0.01em] text-ink">Datos extraídos</p>
+              <p
+                data-pill
+                data-state="idle"
+                aria-live="off"
+                class="group/pill mt-1 inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2 py-0.5 text-xs font-medium text-muted transition-colors duration-200 data-[state=processing]:text-ink data-[state=ready]:border-ink/15 data-[state=ready]:text-ink data-[state=saved]:border-brand-200 data-[state=saved]:bg-brand-50 data-[state=saved]:text-brand-700"
+              >
+                <span class="size-1.5 rounded-full bg-subtle group-data-[state=processing]/pill:animate-pulse-dot group-data-[state=processing]/pill:bg-brand-500 group-data-[state=ready]/pill:bg-ink group-data-[state=saved]/pill:bg-brand-500"></span>
+                <span data-pill-text>Esperando mensaje</span>
+              </p>
+            </div>
+          </div>
+
+          <ol class="mt-5 grid grid-cols-3 rounded-xl border border-line-soft bg-canvas px-2 py-3" aria-label="Etapas">
+            {
+              steps.map((step, i) => (
+                <li data-step data-state={i === 0 ? 'active' : 'pending'} class="group/step relative flex flex-col items-center gap-1.5 text-center">
+                  {i < steps.length - 1 && (
+                    <span
+                      aria-hidden="true"
+                      class="absolute top-3.5 right-[calc(-50%+20px)] left-[calc(50%+20px)] h-px bg-line transition-colors duration-300 group-data-[state=done]/step:bg-brand-500"
+                    />
+                  )}
+                  <span class="relative inline-flex size-7 items-center justify-center rounded-full border border-line bg-surface text-subtle transition-colors duration-300 group-data-[state=active]/step:border-ink group-data-[state=active]/step:bg-ink group-data-[state=active]/step:text-white group-data-[state=done]/step:border-brand-500 group-data-[state=done]/step:bg-brand-500 group-data-[state=done]/step:text-white">
+                    <Icon name={step.icon} class="size-3.5 group-data-[state=done]/step:hidden" />
+                    <Icon name="check" class="hidden size-3.5 group-data-[state=done]/step:block" strokeWidth={2.5} />
+                  </span>
+                  <span class="text-[12px] leading-tight text-muted group-data-[state=active]/step:font-medium group-data-[state=active]/step:text-ink group-data-[state=done]/step:text-body">
+                    <span class="font-mono text-[10.5px] text-muted">{step.n}</span>
+                    {step.label}
+                  </span>
+                </li>
+              ))
+            }
+          </ol>
+
+          <dl class="mt-3 divide-y divide-line-soft">
+            {
+              fields.map((field) => (
+                <div
+                  data-field={field.key}
+                  data-filled="false"
+                  data-corrected="false"
+                  class="group/row -mx-2 flex min-h-[42px] items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors duration-500 data-[corrected=true]:bg-brand-50"
+                >
+                  <dt class="flex shrink-0 items-center gap-1.5 font-mono text-[11px] tracking-wider text-muted uppercase">
+                    <span data-label>{field.label}</span>
+                    {field.key === 'amount' && (
+                      <span class="hidden rounded-full bg-brand-100 px-1.5 py-px font-sans text-[10.5px] font-medium tracking-normal text-brand-800 normal-case group-data-[corrected=true]/row:inline-flex">
+                        Corregido
+                      </span>
+                    )}
+                  </dt>
+                  <dd class="flex min-w-0 justify-end text-right">
+                    <span
+                      data-skel
+                      class:list={[
+                        'block h-2.5 rounded-full bg-line group-data-[status=processing]/panel:animate-pulse',
+                        field.skeleton,
+                      ]}
+                    />
+                    {field.key === 'category' ? (
+                      <span data-val hidden class="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-line bg-canvas py-0.5 pr-2.5 pl-1.5 text-[13px] text-ink">
+                        <span data-val-icon class="inline-flex size-3.5 shrink-0 text-brand-600" />
+                        <span data-val-text class="truncate" />
+                      </span>
+                    ) : (
+                      <span data-val hidden class:list={['min-w-0', field.key === 'amount' ? 'text-[17px] font-semibold tracking-[-0.01em] text-ink' : 'text-sm text-ink']}>
+                        <span data-val-text class="tabular" />
+                      </span>
+                    )}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+
+          <div data-footer data-state="pending" class="group/foot mt-auto grid pt-4">
+            <div class="col-start-1 row-start-1 flex items-start gap-2.5 rounded-xl border border-dashed border-line p-3.5 transition-opacity duration-300 group-data-[state=saved]/foot:invisible group-data-[state=saved]/foot:opacity-0">
+              <Icon name="lock" class="mt-0.5 size-4 shrink-0 text-muted" />
+              <div class="text-sm leading-relaxed">
+                <p class="font-medium text-ink">Tú confirmas cada gasto</p>
+                <p class="mt-0.5 text-muted">¿Algo no cuadra? Responde «eran 15 mil» y se corrige.</p>
+              </div>
+            </div>
+            <div class="invisible col-start-1 row-start-1 rounded-xl border border-line bg-canvas p-3.5 opacity-0 transition-opacity duration-300 group-data-[state=saved]/foot:visible group-data-[state=saved]/foot:opacity-100">
+              <p class="flex items-center gap-1.5 text-sm font-medium text-ink">
+                <Icon name="check-circle" class="size-4 text-brand-600" />
+                Guardado en tu historial
+              </p>
+              <p class="mt-2.5 flex items-baseline justify-between gap-3 text-sm">
+                <span class="text-muted">Disponible de tu quincena</span>
+                <span data-foot-avail class="tabular font-semibold text-ink">$800.000</span>
+              </p>
+              <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-line">
+                <div data-foot-bar class="h-full w-0 rounded-full bg-brand-500 transition-[width] duration-700 ease-out-soft"></div>
+              </div>
+              <p data-foot-used class="mt-1.5 font-mono text-[11px] text-muted">50% usado de $1.600.000</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat message templates (cloned by the script; text set with textContent) -->
+  <template data-tpl="out-voice">
+    <div data-playing="false" class="group/voice w-[80%] self-end rounded-lg rounded-tr-sm bg-wa-out px-2 pt-1.5 pb-1 shadow-card">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex size-7 shrink-0 items-center justify-center text-wa-meta">
+          <Icon name="play" class="size-4 fill-current group-data-[playing=true]/voice:hidden" />
+          <Icon name="pause" class="hidden size-4 fill-current group-data-[playing=true]/voice:block" />
+        </span>
+        <span class="flex h-7 min-w-0 flex-1 items-center gap-[2px]">
+          {
+            wave.map((h, i) => (
+              <span
+                class="w-[2.5px] shrink-0 rounded-full bg-wa-meta/50 group-data-[playing=true]/voice:animate-wave group-data-[playing=true]/voice:bg-wa-header"
+                style={`height: ${h}%; animation-delay: ${(i % 7) * 90}ms`}
+              />
+            ))
+          }
+        </span>
+      </div>
+      <div class="flex items-center justify-between pl-9 text-[10.5px] text-wa-meta">
+        <span class="tabular">0:04</span>
+        <span class="inline-flex items-center gap-1">
+          <span data-time></span>
+          <svg viewBox="0 0 16 11" class="h-[11px] w-4 text-wa-tick" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m1 5.8 2.9 2.8L9.6 1.6"></path><path d="m7.6 8.4.4.2 5.6-7"></path></svg>
+        </span>
+      </div>
+      <p data-transcript class="mt-1 border-t border-black/5 pt-1 pb-0.5 text-[12px] leading-snug text-wa-text/80 italic" hidden></p>
+    </div>
+  </template>
+
+  <template data-tpl="out-photo">
+    <div data-scanning="false" class="group/photo w-[66%] self-end rounded-lg rounded-tr-sm bg-wa-out p-1 shadow-card">
+      <div class="relative h-[168px] overflow-hidden rounded-md bg-stone-300">
+        <div class="absolute top-3 left-1/2 w-[150px] -translate-x-1/2 -rotate-2 rounded-sm bg-white px-2.5 pt-2 pb-3 font-mono text-[8px] leading-[1.5] text-zinc-600 shadow-card">
+          <p class="text-center text-[9.5px] font-semibold tracking-wide text-zinc-900">TIENDAS D1</p>
+          <p class="text-center text-zinc-500">Factura de venta</p>
+          <div class="my-1 border-t border-dashed border-zinc-300"></div>
+          {
+            receipt.map((line) => (
+              <p class="flex justify-between gap-2">
+                <span class="truncate">{line.item}</span>
+                <span class="shrink-0">{line.price}</span>
+              </p>
+            ))
+          }
+          <div class="my-1 border-t border-dashed border-zinc-300"></div>
+          <p class="flex justify-between text-[9px] font-semibold text-zinc-900">
+            <span>TOTAL</span>
+            <span>$45.600</span>
+          </p>
+        </div>
+        <span class="absolute inset-0 hidden bg-brand-500/10 group-data-[scanning=true]/photo:block"></span>
+        <span class="absolute inset-x-0 hidden h-0.5 animate-scan bg-brand-400 group-data-[scanning=true]/photo:block"></span>
+        <span class="absolute right-1.5 bottom-1 inline-flex items-center gap-1 rounded-full bg-black/35 px-1.5 text-[10.5px] text-white">
+          <span data-time></span>
+          <svg viewBox="0 0 16 11" class="h-[11px] w-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m1 5.8 2.9 2.8L9.6 1.6"></path><path d="m7.6 8.4.4.2 5.6-7"></path></svg>
+        </span>
+      </div>
+    </div>
+  </template>
+
+  <template data-tpl="out-text">
+    <div class="flex max-w-[82%] flex-wrap items-end justify-end gap-x-2 self-end rounded-lg rounded-tr-sm bg-wa-out px-2.5 py-1.5 text-[13px] leading-snug text-wa-text shadow-card">
+      <span data-text class="mr-auto"></span>
+      <span class="inline-flex translate-y-0.5 items-center gap-1 text-[10.5px] text-wa-meta">
+        <span data-time></span>
+        <svg viewBox="0 0 16 11" class="h-[11px] w-4 text-wa-tick" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m1 5.8 2.9 2.8L9.6 1.6"></path><path d="m7.6 8.4.4.2 5.6-7"></path></svg>
+      </span>
+    </div>
+  </template>
+
+  <template data-tpl="in-text">
+    <div class="flex max-w-[86%] flex-wrap items-end justify-end gap-x-2 self-start rounded-lg rounded-tl-sm bg-wa-in px-2.5 py-1.5 text-[13px] leading-snug text-wa-text shadow-card">
+      <span data-text class="mr-auto"></span>
+      <span data-time class="translate-y-0.5 text-[10.5px] text-wa-meta"></span>
+    </div>
+  </template>
+
+  <template data-tpl="typing">
+    <div class="flex items-center gap-1 self-start rounded-lg rounded-tl-sm bg-wa-in px-3 py-3 shadow-card" aria-hidden="true">
+      <span class="size-1.5 animate-typing rounded-full bg-wa-meta"></span>
+      <span class="size-1.5 animate-typing rounded-full bg-wa-meta [animation-delay:150ms]"></span>
+      <span class="size-1.5 animate-typing rounded-full bg-wa-meta [animation-delay:300ms]"></span>
+    </div>
+  </template>
+
+  <template data-tpl="card">
+    <div class="w-[88%] self-start overflow-hidden rounded-lg rounded-tl-sm bg-wa-in text-wa-text shadow-card">
+      <div class="px-3 pt-2.5 pb-1">
+        <p class="flex items-center gap-1.5 text-[11.5px] font-medium text-wa-meta">
+          <span data-card-icon class="inline-flex size-5 items-center justify-center rounded-md bg-brand-50 p-[3px] text-brand-700"></span>
+          Gasto detectado
+        </p>
+        <p class="mt-1.5 flex items-center gap-2">
+          <span data-amount class="tabular text-[22px] leading-none font-semibold tracking-[-0.02em]"></span>
+          <span data-corrected class="rounded-full bg-brand-50 px-1.5 py-px text-[10.5px] font-medium text-brand-800" hidden>Corregido</span>
+        </p>
+        <dl class="mt-2 space-y-0.5 text-[12px] leading-snug">
+          <div class="flex justify-between gap-3"><dt class="text-wa-meta">Categoría</dt><dd data-cat class="truncate text-right"></dd></div>
+          <div class="flex justify-between gap-3"><dt data-detail-label class="shrink-0 text-wa-meta"></dt><dd data-detail class="truncate text-right"></dd></div>
+          <div class="flex justify-between gap-3"><dt class="text-wa-meta">Método</dt><dd data-method class="truncate text-right"></dd></div>
+          <div class="flex justify-between gap-3"><dt class="text-wa-meta">Fecha</dt><dd data-date class="truncate text-right"></dd></div>
+        </dl>
+        <p data-time class="mt-1 text-right text-[10.5px] text-wa-meta"></p>
+      </div>
+      <button
+        type="button"
+        data-action="confirm"
+        class="flex h-9 w-full items-center justify-center gap-1.5 border-t border-black/5 text-[13px] font-medium text-wa-header transition-colors duration-150 hover:bg-wa-panel data-[pressed=true]:bg-wa-panel disabled:cursor-default disabled:hover:bg-transparent data-[pressed=true]:disabled:hover:bg-wa-panel [&:disabled:not([data-pressed=true])]:text-wa-meta"
+      >
+        <Icon name="check" class="size-4" strokeWidth={2.25} />
+        Confirmar
+      </button>
+      <button
+        type="button"
+        data-action="edit"
+        class="flex h-9 w-full items-center justify-center gap-1.5 border-t border-black/5 text-[13px] font-medium text-wa-header transition-colors duration-150 hover:bg-wa-panel data-[pressed=true]:bg-wa-panel disabled:cursor-default disabled:hover:bg-transparent data-[pressed=true]:disabled:hover:bg-wa-panel [&:disabled:not([data-pressed=true])]:text-wa-meta"
+      >
+        <Icon name="pencil" class="size-3.5" strokeWidth={2} />
+        Editar
+      </button>
+    </div>
+  </template>
+
+  <template data-tpl="saved">
+    <div class="w-[88%] self-start rounded-lg rounded-tl-sm bg-wa-in px-2.5 py-2 text-[13px] leading-snug text-wa-text shadow-card">
+      <p class="flex items-center gap-1.5 font-medium">
+        <Icon name="check-circle" class="size-4 text-brand-600" />
+        Listo, guardado.
+      </p>
+      <p class="mt-1 text-[12px] text-wa-meta">
+        Disponible de tu quincena: <span data-avail class="tabular font-semibold text-wa-text"></span>
+      </p>
+      <div class="mt-1.5 h-1 overflow-hidden rounded-full bg-wa-panel">
+        <div data-bar class="h-full rounded-full bg-brand-500"></div>
+      </div>
+      <p class="mt-1 flex justify-between text-[10.5px] text-wa-meta">
+        <span data-used class="tabular"></span>
+        <span data-time></span>
+      </p>
+    </div>
+  </template>
+
+  {
+    categoryIcons.map((name) => (
+      <template data-tpl={`icon-${name}`}>
+        <Icon name={name} class="size-full" />
+      </template>
+    ))
+  }
+</div>
+
+<style is:global>
+  /* Freeze CSS motion while the demo is paused or off-screen. */
+  [data-demo][data-frozen='true'] * {
+    animation-play-state: paused !important;
+  }
+</style>
+
+<script>
+  type Kind = 'voz' | 'foto' | 'texto';
+  type FieldKey = 'amount' | 'category' | 'detail' | 'method' | 'date' | 'source';
+  type Phase = 'compose' | 'processing' | 'awaiting' | 'confirming' | 'editing' | 'done';
+  type Status = 'idle' | 'processing' | 'ready' | 'saved';
+  type StepState = 'pending' | 'active' | 'done';
+  type Tag = 'flow' | 'auto';
+
+  interface Scenario {
+    id: Kind;
+    clock: string;
+    time: string;
+    amount: number;
+    correctedAmount: number;
+    correction: string;
+    category: string;
+    icon: 'utensils' | 'shopping-cart' | 'car';
+    detailLabel: string;
+    detail: string;
+    method: string;
+    source: string;
+    message: string;
+  }
+
+  const SCENARIOS: readonly Scenario[] = [
+    {
+      id: 'voz',
+      clock: '12:40',
+      time: '12:40 p. m.',
+      amount: 18000,
+      correctedAmount: 15000,
+      correction: 'eran 15 mil',
+      category: 'Alimentación',
+      icon: 'utensils',
+      detailLabel: 'Descripción',
+      detail: 'Almuerzo corrientazo',
+      method: 'Nequi',
+      source: 'Nota de voz · Whisper',
+      message: '«Almorcé en el corrientazo, 18 mil, pagué con Nequi»',
+    },
+    {
+      id: 'foto',
+      clock: '6:15',
+      time: '6:15 p. m.',
+      amount: 45600,
+      correctedAmount: 44600,
+      correction: 'eran 44.600',
+      category: 'Mercado',
+      icon: 'shopping-cart',
+      detailLabel: 'Comercio',
+      detail: 'Tiendas D1 · 4 productos',
+      method: 'Tarjeta débito',
+      source: 'Foto · Gemini 2.5 Flash',
+      message: '',
+    },
+    {
+      id: 'texto',
+      clock: '8:05',
+      time: '8:05 a. m.',
+      amount: 12500,
+      correctedAmount: 11800,
+      correction: 'fueron 11.800',
+      category: 'Transporte',
+      icon: 'car',
+      detailLabel: 'Descripción',
+      detail: 'Uber a la oficina',
+      method: 'Tarjeta de crédito',
+      source: 'Texto · DeepSeek',
+      message: 'uber a la oficina 12.500',
+    },
+  ];
+
+  const FIELD_ORDER: readonly FieldKey[] = ['amount', 'category', 'detail', 'method', 'date', 'source'];
+  const STATUS_TEXT: Record<Status, string> = {
+    idle: 'Esperando mensaje',
+    processing: 'Procesando…',
+    ready: 'Listo para confirmar',
+    saved: 'Guardado',
+  };
+  const BUDGET = 1_600_000;
+  const START_AVAILABLE = 800_000;
+
+  // Timing (ms). Sending → card is fixed; compose time depends on the scenario.
+  const T = {
+    fade: 220,
+    typing: 600,
+    firstField: 800,
+    fieldStagger: 250,
+    card: 2600,
+    autoConfirm: 2300,
+    autoConfirmAfterEdit: 3000,
+    press: 260,
+    saved: 1200,
+    advance: 3000,
+    resumeAdvance: 1200,
+    char: 45,
+  } as const;
+
+  const money = (n: number) => '$' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+  /** Single-timer scheduler on a virtual clock that can be frozen and resumed exactly. */
+  class Timeline {
+    private base = 0;
+    private since = 0;
+    private handle = 0;
+    private tasks: { due: number; fn: () => void; tag: Tag }[] = [];
+    running = false;
+
+    now(): number {
+      return this.running ? this.base + (performance.now() - this.since) : this.base;
+    }
+
+    start(): void {
+      if (this.running) return;
+      this.since = performance.now();
+      this.running = true;
+      this.arm();
+    }
+
+    stop(): void {
+      if (!this.running) return;
+      this.base = this.now();
+      this.running = false;
+      this.arm();
+    }
+
+    after(ms: number, fn: () => void, tag: Tag = 'flow'): void {
+      const due = this.now() + ms;
+      const index = this.tasks.findIndex((t) => t.due > due);
+      const task = { due, fn, tag };
+      if (index === -1) this.tasks.push(task);
+      else this.tasks.splice(index, 0, task);
+      this.arm();
+    }
+
+    cancel(tag?: Tag): void {
+      this.tasks = tag ? this.tasks.filter((t) => t.tag !== tag) : [];
+      this.arm();
+    }
+
+    has(tag: Tag): boolean {
+      return this.tasks.some((t) => t.tag === tag);
+    }
+
+    private arm(): void {
+      window.clearTimeout(this.handle);
+      this.handle = 0;
+      if (!this.running || this.tasks.length === 0) return;
+      this.handle = window.setTimeout(this.flush, Math.max(0, this.tasks[0].due - this.now()));
+    }
+
+    private flush = (): void => {
+      this.handle = 0;
+      const now = this.now();
+      while (this.running && this.tasks.length > 0 && this.tasks[0].due <= now) {
+        this.tasks.shift()?.fn();
+      }
+      this.arm();
+    };
+  }
+
+  function initDemo(root: HTMLElement): void {
+    const one = <E extends Element = HTMLElement>(sel: string, scope: ParentNode = root) => scope.querySelector<E>(sel);
+    const all = <E extends Element = HTMLElement>(sel: string, scope: ParentNode = root) =>
+      Array.from(scope.querySelectorAll<E>(sel));
+
+    const tablist = one('[data-tablist]');
+    const tabs = all<HTMLButtonElement>('[role="tab"][data-tab]');
+    const screen = one('[role="tabpanel"]');
+    const log = one('[data-log]');
+    const clockEl = one('[data-clock]');
+    const presence = one('[data-presence]');
+    const pauseBtn = one<HTMLButtonElement>('[data-pause]');
+    const pauseText = one('[data-pause-text]');
+    const icoPause = one('[data-ico-pause]');
+    const icoPlay = one('[data-ico-play]');
+    const repeatBtn = one<HTMLButtonElement>('[data-repeat]');
+    const inputText = one('[data-input-text]');
+    const ph = one('[data-ph]');
+    const typed = one('[data-typed]');
+    const caret = one('[data-caret]');
+    const rec = one('[data-rec]');
+    const recTime = one('[data-rec-time]');
+    const attach = one('[data-attach]');
+    const cam = one('[data-cam]');
+    const sendBtn = one('[data-send-btn]');
+    const icoMic = one('[data-ico-mic]');
+    const icoSend = one('[data-ico-send]');
+    const panel = one('[data-panel]');
+    const pill = one('[data-pill]');
+    const pillText = one('[data-pill-text]');
+    const footer = one('[data-footer]');
+    const footAvail = one('[data-foot-avail]');
+    const footBar = one('[data-foot-bar]');
+    const footUsed = one('[data-foot-used]');
+    const stepEls = all('[data-step]');
+
+    if (
+      !tablist || !screen || !log || !clockEl || !presence || !pauseBtn || !pauseText || !icoPause || !icoPlay ||
+      !repeatBtn || !inputText || !ph || !typed || !caret || !rec || !recTime || !attach || !cam || !sendBtn ||
+      !icoMic || !icoSend || !panel || !pill || !pillText || !footer || !footAvail || !footBar || !footUsed ||
+      tabs.length !== SCENARIOS.length || stepEls.length !== 3
+    ) {
+      return;
+    }
+
+    const templates = new Map<string, HTMLElement>();
+    all<HTMLTemplateElement>('template[data-tpl]').forEach((tpl) => {
+      const node = tpl.content.firstElementChild;
+      if (node instanceof HTMLElement || node instanceof SVGElement) templates.set(tpl.dataset.tpl ?? '', node as HTMLElement);
+    });
+    const clone = (name: string): HTMLElement | null => {
+      const node = templates.get(name);
+      return node ? (node.cloneNode(true) as HTMLElement) : null;
+    };
+    const setText = (scope: ParentNode, sel: string, text: string) => {
+      const el = scope.querySelector(sel);
+      if (el) el.textContent = text;
+    };
+
+    const fieldEls = new Map<FieldKey, { row: HTMLElement; skel: HTMLElement; val: HTMLElement; text: HTMLElement; label: HTMLElement; icon: HTMLElement | null }>();
+    for (const key of FIELD_ORDER) {
+      const row = one(`[data-field="${key}"]`);
+      const skel = row && one('[data-skel]', row);
+      const val = row && one('[data-val]', row);
+      const text = row && one('[data-val-text]', row);
+      const label = row && one('[data-label]', row);
+      if (!row || !skel || !val || !text || !label) return;
+      fieldEls.set(key, { row, skel, val, text, label, icon: one('[data-val-icon]', row) });
+    }
+
+    const clock = new Timeline();
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const wide = window.matchMedia('(min-width: 80rem)');
+
+    let staticMode = reduceMotion.matches;
+    let autoplay = !staticMode;
+    let frozen = false;
+    let inView = false;
+    let pageVisible = document.visibilityState === 'visible';
+    let current = 0;
+    let phase: Phase = 'compose';
+    let scenarioStart = 0;
+    let amountNow = SCENARIOS[0].amount;
+    let edited = false;
+    let typingNode: HTMLElement | null = null;
+    let lastCard: HTMLElement | null = null;
+    let raf = 0;
+    const confirmed = new Map<Kind, number>();
+    let progress: { start: number; frac: number; end: number | null } = { start: 0, frac: 0, end: null };
+
+    const scenario = () => SCENARIOS[current];
+    const available = () => START_AVAILABLE - Array.from(confirmed.values()).reduce((sum, n) => sum + n, 0);
+    const usedPct = (avail: number) => Math.round(((BUDGET - avail) / BUDGET) * 100);
+
+    // ---------- Progress bar on the active tab ----------
+    const progressFrac = (): number => {
+      if (progress.end === null) return progress.frac;
+      const span = Math.max(1, progress.end - progress.start);
+      return Math.min(1, progress.frac + (1 - progress.frac) * ((clock.now() - progress.start) / span));
+    };
+    const setProgressEnd = (end: number | null) => {
+      progress = { start: clock.now(), frac: progressFrac(), end };
+    };
+    const drawProgress = () => {
+      const frac = progressFrac();
+      tabs.forEach((tab, i) => {
+        const bar = one('[data-progress]', tab);
+        if (bar) bar.style.transform = `scaleX(${i === current ? frac : 0})`;
+      });
+    };
+    const tick = () => {
+      drawProgress();
+      raf = window.requestAnimationFrame(tick);
+    };
+
+    // ---------- Phone UI ----------
+    const setPresence = (isTyping: boolean) => {
+      presence.dataset.typing = String(isTyping);
+      presence.textContent = isTyping ? 'escribiendo…' : 'en línea';
+    };
+
+    const setInput = (mode: 'idle' | 'typing' | 'rec', text = '') => {
+      ph.hidden = mode !== 'idle';
+      typed.hidden = mode !== 'typing';
+      caret.hidden = mode !== 'typing';
+      rec.hidden = mode !== 'rec';
+      attach.hidden = mode === 'typing';
+      typed.textContent = mode === 'typing' ? text : '';
+      if (mode === 'rec') recTime.textContent = text;
+      icoMic.hidden = mode === 'typing';
+      icoSend.hidden = mode !== 'typing';
+      sendBtn.dataset.rec = String(mode === 'rec');
+      inputText.scrollLeft = inputText.scrollWidth;
+    };
+
+    const add = (node: HTMLElement, animate: boolean) => {
+      node.dataset.msg = '';
+      if (animate) node.classList.add('animate-pop-in');
+      log.append(node);
+      return node;
+    };
+
+    const clearLog = () => {
+      all('[data-msg]', log).forEach((n) => n.remove());
+      typingNode = null;
+      lastCard = null;
+    };
+
+    const showTyping = () => {
+      if (typingNode) return;
+      const node = clone('typing');
+      if (!node) return;
+      typingNode = add(node, true);
+      setPresence(true);
+    };
+
+    const hideTyping = () => {
+      typingNode?.remove();
+      typingNode = null;
+      setPresence(false);
+    };
+
+    const appendOutText = (text: string, animate = true) => {
+      const node = clone('out-text');
+      if (!node) return null;
+      setText(node, '[data-text]', text);
+      setText(node, '[data-time]', scenario().time);
+      return add(node, animate);
+    };
+
+    const appendInText = (text: string, animate = true) => {
+      const node = clone('in-text');
+      if (!node) return null;
+      setText(node, '[data-text]', text);
+      setText(node, '[data-time]', scenario().time);
+      return add(node, animate);
+    };
+
+    const appendUserMessage = (s: Scenario, animate: boolean) => {
+      if (s.id === 'texto') return appendOutText(s.message, animate);
+      const node = clone(s.id === 'voz' ? 'out-voice' : 'out-photo');
+      if (!node) return null;
+      setText(node, '[data-time]', s.time);
+      const transcript = one('[data-transcript]', node);
+      if (transcript) {
+        transcript.textContent = s.message;
+        transcript.hidden = animate;
+      }
+      return add(node, animate);
+    };
+
+    const iconFor = (s: Scenario) => clone(`icon-${s.icon}`);
+
+    const disableCardButtons = () => {
+      all<HTMLButtonElement>('button[data-action]', log).forEach((b) => (b.disabled = true));
+    };
+
+    const appendCard = (s: Scenario, amount: number, corrected: boolean, animate: boolean) => {
+      const node = clone('card');
+      if (!node) return null;
+      disableCardButtons();
+      const icon = iconFor(s);
+      if (icon) one('[data-card-icon]', node)?.append(icon);
+      setText(node, '[data-amount]', money(amount));
+      const tag = one('[data-corrected]', node);
+      if (tag) tag.hidden = !corrected;
+      setText(node, '[data-cat]', s.category);
+      setText(node, '[data-detail-label]', s.detailLabel);
+      setText(node, '[data-detail]', s.detail);
+      setText(node, '[data-method]', s.method);
+      setText(node, '[data-date]', `Hoy, ${s.time}`);
+      setText(node, '[data-time]', s.time);
+      lastCard = add(node, animate);
+      return lastCard;
+    };
+
+    const appendSaved = (s: Scenario, animate: boolean) => {
+      const node = clone('saved');
+      if (!node) return;
+      const avail = available();
+      setText(node, '[data-avail]', money(avail));
+      setText(node, '[data-used]', `${usedPct(avail)}% usado`);
+      setText(node, '[data-time]', s.time);
+      const bar = one('[data-bar]', node);
+      if (bar) bar.style.width = `${usedPct(avail)}%`;
+      add(node, animate);
+    };
+
+    // ---------- Extraction panel ----------
+    const setStatus = (status: Status) => {
+      panel.dataset.status = status;
+      pill.dataset.state = status;
+      pillText.textContent = STATUS_TEXT[status];
+    };
+
+    const setSteps = (states: [StepState, StepState, StepState]) => {
+      stepEls.forEach((el, i) => (el.dataset.state = states[i]));
+    };
+
+    const replay = (el: HTMLElement) => {
+      el.classList.remove('animate-pop-in');
+      void el.offsetWidth;
+      el.classList.add('animate-pop-in');
+    };
+
+    const clearField = (key: FieldKey) => {
+      const f = fieldEls.get(key);
+      if (!f) return;
+      f.row.dataset.filled = 'false';
+      f.skel.hidden = false;
+      f.val.hidden = true;
+      f.text.textContent = '';
+      f.icon?.replaceChildren();
+    };
+
+    const fillField = (key: FieldKey, s: Scenario, animate: boolean) => {
+      const f = fieldEls.get(key);
+      if (!f) return;
+      const values: Record<FieldKey, string> = {
+        amount: money(amountNow),
+        category: s.category,
+        detail: s.detail,
+        method: s.method,
+        date: `Hoy, ${s.time}`,
+        source: s.source,
+      };
+      f.text.textContent = values[key];
+      if (f.icon) {
+        const icon = iconFor(s);
+        f.icon.replaceChildren(...(icon ? [icon] : []));
+      }
+      f.row.dataset.filled = 'true';
+      f.skel.hidden = true;
+      f.val.hidden = false;
+      if (animate) replay(f.val);
+    };
+
+    const setFooter = (saved: boolean) => {
+      footer.dataset.state = saved ? 'saved' : 'pending';
+      const avail = available();
+      footAvail.textContent = money(avail);
+      footUsed.textContent = `${usedPct(avail)}% usado de ${money(BUDGET)}`;
+      footBar.style.width = saved ? `${usedPct(avail)}%` : '0%';
+    };
+
+    const resetPanel = (s: Scenario) => {
+      setStatus('idle');
+      setSteps(['active', 'pending', 'pending']);
+      FIELD_ORDER.forEach(clearField);
+      fieldEls.forEach((f) => (f.row.dataset.corrected = 'false'));
+      const detail = fieldEls.get('detail');
+      if (detail) detail.label.textContent = s.detailLabel;
+      setFooter(false);
+    };
+
+    // ---------- Flow ----------
+    const select = (i: number) => {
+      current = i;
+      tabs.forEach((tab, k) => {
+        tab.setAttribute('aria-selected', String(k === i));
+        tab.tabIndex = k === i ? 0 : -1;
+      });
+      screen.setAttribute('aria-labelledby', tabs[i].id);
+      clockEl.textContent = SCENARIOS[i].clock;
+      progress = { start: clock.now(), frac: 0, end: null };
+      drawProgress();
+    };
+
+    const composeDuration = (s: Scenario) => {
+      if (s.id === 'voz') return 250 + 4 * 330 + 150;
+      if (s.id === 'foto') return 1100;
+      return 300 + s.message.length * T.char + 250;
+    };
+
+    const autoTotal = (s: Scenario) => composeDuration(s) + T.card + T.autoConfirm + T.press + T.saved + T.advance;
+
+    const typeInto = (text: string, startAt: number) => {
+      for (let k = 1; k <= text.length; k++) {
+        clock.after(startAt + k * T.char, () => setInput('typing', text.slice(0, k)));
+      }
+      return startAt + text.length * T.char;
+    };
+
+    /** Schedules the autoplay step for the current phase (auto-confirm or advance). */
+    const scheduleAuto = (resumed = false) => {
+      if (!autoplay || staticMode) return;
+      clock.cancel('auto');
+      if (phase === 'awaiting') {
+        const wait = edited ? T.autoConfirmAfterEdit : T.autoConfirm;
+        clock.after(wait, pressConfirm, 'auto');
+        setProgressEnd(clock.now() + wait + T.press + T.saved + T.advance);
+      } else if (phase === 'done') {
+        const wait = resumed ? T.resumeAdvance : T.advance;
+        clock.after(wait, () => play((current + 1) % SCENARIOS.length), 'auto');
+        setProgressEnd(clock.now() + wait);
+      } else if (phase === 'editing' || phase === 'confirming') {
+        setProgressEnd(null);
+      } else {
+        setProgressEnd(scenarioStart + autoTotal(scenario()));
+      }
+    };
+
+    const awaiting = () => {
+      phase = 'awaiting';
+      setStatus('ready');
+      setSteps(['done', 'done', 'active']);
+      scheduleAuto();
+    };
+
+    const pressConfirm = () => {
+      const btn = lastCard ? one<HTMLButtonElement>('button[data-action="confirm"]', lastCard) : null;
+      if (btn) btn.dataset.pressed = 'true';
+      clock.after(T.press, confirm, 'auto');
+    };
+
+    const confirm = () => {
+      clock.cancel('auto');
+      phase = 'confirming';
+      const btn = lastCard ? one<HTMLButtonElement>('button[data-action="confirm"]', lastCard) : null;
+      if (btn) btn.dataset.pressed = 'true';
+      disableCardButtons();
+      appendOutText('Confirmar');
+      clock.after(450, showTyping);
+      clock.after(T.saved, () => {
+        const s = scenario();
+        hideTyping();
+        confirmed.set(s.id, amountNow);
+        appendSaved(s, true);
+        setStatus('saved');
+        setSteps(['done', 'done', 'done']);
+        setFooter(true);
+        phase = 'done';
+        scheduleAuto();
+      });
+    };
+
+    const edit = () => {
+      const s = scenario();
+      clock.cancel('auto');
+      phase = 'editing';
+      edited = true;
+      setProgressEnd(null);
+      const btn = lastCard ? one<HTMLButtonElement>('button[data-action="edit"]', lastCard) : null;
+      if (btn) btn.dataset.pressed = 'true';
+      disableCardButtons();
+      appendOutText('Editar');
+      clock.after(450, showTyping);
+      clock.after(1050, () => {
+        hideTyping();
+        appendInText('¿Qué quieres corregir?');
+      });
+      const sendAt = typeInto(s.correction, 1500) + 250;
+      clock.after(sendAt, () => {
+        setInput('idle');
+        appendOutText(s.correction);
+        setStatus('processing');
+        setSteps(['done', 'active', 'pending']);
+        clearField('amount');
+      });
+      clock.after(sendAt + 500, showTyping);
+      clock.after(sendAt + 900, () => {
+        amountNow = s.correctedAmount;
+        fillField('amount', s, true);
+        const row = fieldEls.get('amount')?.row;
+        if (row) row.dataset.corrected = 'true';
+      });
+      clock.after(sendAt + 1400, () => {
+        hideTyping();
+        appendCard(s, amountNow, true, true);
+        awaiting();
+      });
+    };
+
+    const send = (s: Scenario) => {
+      setInput('idle');
+      cam.dataset.active = 'false';
+      const msg = appendUserMessage(s, true);
+      phase = 'processing';
+      setStatus('processing');
+      setSteps(['done', 'active', 'pending']);
+      if (msg && s.id === 'voz') {
+        msg.dataset.playing = 'true';
+        clock.after(700, () => {
+          const transcript = one('[data-transcript]', msg);
+          if (transcript) {
+            transcript.hidden = false;
+            replay(transcript);
+          }
+        });
+        clock.after(1500, () => (msg.dataset.playing = 'false'));
+      }
+      if (msg && s.id === 'foto') msg.dataset.scanning = 'true';
+      clock.after(T.typing, showTyping);
+      FIELD_ORDER.forEach((key, k) => clock.after(T.firstField + k * T.fieldStagger, () => fillField(key, s, true)));
+      clock.after(T.card, () => {
+        hideTyping();
+        if (msg) msg.dataset.scanning = 'false';
+        appendCard(s, s.amount, false, true);
+        awaiting();
+      });
+    };
+
+    const compose = (s: Scenario) => {
+      if (s.id === 'voz') {
+        clock.after(250, () => setInput('rec', '0:00'));
+        for (let k = 1; k <= 4; k++) clock.after(250 + k * 330, () => setInput('rec', `0:0${k}`));
+      } else if (s.id === 'foto') {
+        clock.after(300, () => (cam.dataset.active = 'true'));
+      } else {
+        typeInto(s.message, 300);
+      }
+      clock.after(composeDuration(s), () => send(s));
+    };
+
+    const resetCycleFor = (i: number) => {
+      if (i === 0) confirmed.clear();
+      confirmed.delete(SCENARIOS[i].id);
+    };
+
+    const renderFinal = (i: number) => {
+      clock.cancel();
+      select(i);
+      const s = scenario();
+      confirmed.clear();
+      amountNow = s.amount;
+      clearLog();
+      log.dataset.fading = 'false';
+      resetPanel(s);
+      setInput('idle');
+      setPresence(false);
+      cam.dataset.active = 'false';
+      appendUserMessage(s, false);
+      FIELD_ORDER.forEach((key) => fillField(key, s, false));
+      appendCard(s, s.amount, false, false);
+      const btn = lastCard ? one<HTMLButtonElement>('button[data-action="confirm"]', lastCard) : null;
+      if (btn) btn.dataset.pressed = 'true';
+      disableCardButtons();
+      appendOutText('Confirmar', false);
+      confirmed.set(s.id, s.amount);
+      appendSaved(s, false);
+      setStatus('saved');
+      setSteps(['done', 'done', 'done']);
+      setFooter(true);
+      phase = 'done';
+    };
+
+    function play(i: number): void {
+      if (staticMode) {
+        renderFinal(i);
+        return;
+      }
+      clock.cancel();
+      select(i);
+      resetCycleFor(i);
+      const s = scenario();
+      phase = 'compose';
+      edited = false;
+      amountNow = s.amount;
+      scenarioStart = clock.now();
+      resetPanel(s);
+      setInput('idle');
+      setPresence(false);
+      cam.dataset.active = 'false';
+      scheduleAuto();
+      const hasMessages = log.querySelector('[data-msg]') !== null;
+      if (hasMessages) log.dataset.fading = 'true';
+      clock.after(hasMessages ? T.fade : 0, () => {
+        clearLog();
+        log.dataset.fading = 'false';
+        compose(s);
+      });
+    }
+
+    // ---------- Run state ----------
+    const update = () => {
+      const run = !staticMode && !frozen && inView && pageVisible;
+      if (run) clock.start();
+      else clock.stop();
+      root.dataset.frozen = String(!run);
+      root.dataset.autoplay = String(autoplay);
+      root.dataset.static = String(staticMode);
+      pauseBtn.hidden = staticMode;
+      repeatBtn.hidden = staticMode;
+      pauseBtn.setAttribute('aria-label', autoplay ? 'Pausar demostración' : 'Reanudar demostración');
+      pauseText.textContent = autoplay ? 'Pausar' : 'Reanudar';
+      icoPause.hidden = !autoplay;
+      icoPlay.hidden = autoplay;
+      pill.setAttribute('aria-live', autoplay ? 'off' : 'polite');
+      tablist.setAttribute('aria-orientation', wide.matches ? 'vertical' : 'horizontal');
+      if (run && autoplay) {
+        if (!raf) raf = window.requestAnimationFrame(tick);
+      } else {
+        window.cancelAnimationFrame(raf);
+        raf = 0;
+        drawProgress();
+      }
+    };
+
+    const activateTab = (i: number) => {
+      frozen = false;
+      play(i);
+      update();
+    };
+
+    tabs.forEach((tab, i) => tab.addEventListener('click', () => activateTab(i)));
+
+    tablist.addEventListener('keydown', (event) => {
+      const moves: Record<string, number> = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+      let next: number | null = null;
+      const focused = tabs.findIndex((tab) => tab === document.activeElement);
+      const from = focused === -1 ? current : focused;
+      if (event.key in moves) next = (from + moves[event.key] + tabs.length) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      if (next === null) return;
+      event.preventDefault();
+      tabs[next].focus();
+      activateTab(next);
+    });
+
+    pauseBtn.addEventListener('click', () => {
+      if (autoplay) {
+        autoplay = false;
+        frozen = true;
+        clock.cancel('auto');
+      } else {
+        autoplay = true;
+        frozen = false;
+        scheduleAuto(true);
+      }
+      update();
+    });
+
+    repeatBtn.addEventListener('click', () => activateTab(current));
+
+    log.addEventListener('click', (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      const btn = target?.closest<HTMLButtonElement>('button[data-action]');
+      if (!btn || btn.disabled || staticMode) return;
+      frozen = false;
+      if (btn.dataset.action === 'edit') edit();
+      else confirm();
+      update();
+    });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(
+        (entries) => {
+          inView = entries.some((e) => e.isIntersecting);
+          update();
+        },
+        { threshold: 0.2 },
+      ).observe(root);
+    } else {
+      inView = true;
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      pageVisible = document.visibilityState === 'visible';
+      update();
+    });
+
+    wide.addEventListener('change', update);
+
+    reduceMotion.addEventListener('change', () => {
+      staticMode = reduceMotion.matches;
+      autoplay = !staticMode;
+      frozen = false;
+      play(current);
+      update();
+    });
+
+    play(0);
+    update();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-demo]').forEach(initDemo);
+</script>

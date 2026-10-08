@@ -1,0 +1,196 @@
+---
+/**
+ * Precios: two plan cards (Beta featured, Pro coming soon) plus a
+ * reassurance row. On md+ each card is a 4-row subgrid of the parent
+ * (header · price · CTA · features), so the blocks line up across cards.
+ */
+import Icon, { type IconName } from './ui/Icon.astro';
+import Button from './ui/Button.astro';
+import SectionHeader from './ui/SectionHeader.astro';
+import { waLink } from '../lib/site';
+
+interface Plan {
+  id: 'beta' | 'pro';
+  featured: boolean;
+  name: string;
+  badge: string;
+  description: string;
+  price: string;
+  unit?: string;
+  note: string;
+  noteIcon: IconName;
+  cta: { label: string; href: string; icon: IconName; variant: 'primary' | 'secondary' };
+  listLabel: string;
+  listIcon: IconName;
+  features: string[];
+}
+
+/** Keeps times («2:00 p. m.») and «Gemini 2.5 Flash» on one line. */
+const nb = (text: string) =>
+  text.replace(/(\d) ([ap])\. m\./g, '$1\u00a0$2.\u00a0m.').replace('Gemini 2.5 Flash', 'Gemini\u00a02.5\u00a0Flash');
+
+const plans: Plan[] = [
+  {
+    id: 'beta',
+    featured: true,
+    name: 'Beta',
+    badge: 'Disponible ahora',
+    description: 'Para cualquier persona que quiera ordenar sus gastos desde hoy.',
+    price: '$0',
+    unit: 'COP / mes',
+    note: 'Gratis de por vida para usuarios beta',
+    noteIcon: 'check-circle',
+    cta: {
+      label: 'Unirme a la beta',
+      href: waLink('Hola SmartSavings, quiero unirme a la beta'),
+      icon: 'whatsapp',
+      variant: 'primary',
+    },
+    listLabel: 'Incluye:',
+    listIcon: 'check',
+    features: [
+      'Registro ilimitado de gastos e ingresos',
+      'Notas de voz transcritas con Whisper',
+      'Lectura de recibos con Gemini 2.5 Flash',
+      'Corrección conversacional',
+      'Recordatorios a las 2:00 p. m. y 8:00 p. m.',
+      'Resumen diario a las 9:00 p. m.',
+    ],
+  },
+  {
+    id: 'pro',
+    featured: false,
+    name: 'Pro',
+    badge: 'Próximamente',
+    description: 'Para freelancers, familias y pequeños negocios.',
+    price: 'Por anunciar',
+    note: 'Precio preferencial para usuarios beta',
+    noteIcon: 'tag',
+    cta: {
+      label: 'Avisarme del lanzamiento',
+      href: waLink('Hola SmartSavings, quiero que me avisen cuando salga el plan Pro'),
+      icon: 'bell',
+      variant: 'secondary',
+    },
+    listLabel: 'Todo lo de Beta, más:',
+    listIcon: 'plus',
+    features: [
+      'Multimoneda en tiempo real (COP, USD, EUR)',
+      'Alertas de inflación y comparador de precios',
+      'Asistente por llamada de voz en WhatsApp',
+      'Exportación a PDF y panel web',
+      'Cuentas compartidas para parejas y equipos',
+    ],
+  },
+];
+
+const assurances: { icon: IconName; label: string }[] = [
+  { icon: 'lock', label: 'Sin tarjeta de crédito' },
+  { icon: 'shield-check', label: 'Sin acceso a tu banco' },
+  { icon: 'smartphone', label: 'Sin descargas' },
+];
+---
+
+<section id="precios" aria-labelledby="precios-title" class="section-y border-y border-line bg-canvas">
+  <div class="container-page">
+    <SectionHeader
+      id="precios-title"
+      eyebrow="Precios"
+      title="Gratis durante la beta."
+      titleMuted="Sin letra pequeña."
+      description="Únete ahora y conserva gratis, de por vida, todas las funciones actuales."
+    />
+
+    <div class="mx-auto mt-12 grid max-w-4xl items-stretch gap-4 sm:mt-16 md:grid-cols-2 md:gap-y-0">
+      {
+        plans.map((plan, i) => (
+          <article
+            aria-labelledby={`plan-${plan.id}-title`}
+            class:list={[
+              'flex flex-col rounded-2xl border bg-surface p-6 sm:p-8 md:row-span-4 md:grid md:grid-rows-subgrid md:gap-y-0 md:p-7 lg:p-8',
+              plan.featured ? 'border-ink shadow-elevated' : 'border-line shadow-card',
+            ]}
+            data-reveal
+            style={`--reveal-delay: ${i * 80}ms`}
+          >
+            <header>
+              <div class="flex items-center justify-between gap-3">
+                <h3 id={`plan-${plan.id}-title`} class="text-lg font-medium tracking-[-0.01em] text-ink">
+                  {plan.name}
+                </h3>
+                <span
+                  class:list={[
+                    'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium whitespace-nowrap',
+                    plan.featured ? 'border-brand-100 bg-brand-50 text-brand-700' : 'border-line bg-canvas text-body',
+                  ]}
+                >
+                  <span
+                    class:list={['size-1.5 rounded-full', plan.featured ? 'bg-brand-500' : 'bg-subtle']}
+                    aria-hidden="true"
+                  />
+                  {plan.badge}
+                </span>
+              </div>
+              <p class="mt-2 text-[15px] leading-relaxed text-pretty text-body">{plan.description}</p>
+            </header>
+
+            <div class="pt-8">
+              {/* Shared 48px strut: both prices sit on the same baseline across cards. */}
+              <p class="text-5xl leading-none whitespace-nowrap">
+                <span
+                  class:list={[
+                    'tabular font-semibold text-ink',
+                    plan.unit ? 'tracking-[-0.04em]' : 'text-3xl leading-none tracking-[-0.03em] sm:text-4xl',
+                  ]}>{plan.price}</span
+                >{plan.unit && <span class="ml-2 text-sm text-muted">{plan.unit}</span>}
+              </p>
+              <p class="mt-3 flex items-center gap-2 text-sm text-muted">
+                <Icon
+                  name={plan.noteIcon}
+                  class={plan.featured ? 'size-4 shrink-0 text-brand-600' : 'size-4 shrink-0 text-muted'}
+                />
+                {plan.note}
+              </p>
+            </div>
+
+            <div class="pt-8">
+              <Button href={plan.cta.href} variant={plan.cta.variant} icon={plan.cta.icon} class="w-full">
+                {plan.cta.label}
+              </Button>
+            </div>
+
+            <div class="mt-8 border-t border-line pt-6">
+              <p class="font-mono text-[11px] tracking-wider text-muted uppercase">{plan.listLabel}</p>
+              <ul class="mt-4 grid gap-3">
+                {plan.features.map((feature) => (
+                  <li class="flex gap-3 text-[15px] leading-snug text-pretty text-body">
+                    <Icon
+                      name={plan.listIcon}
+                      class={plan.featured ? 'mt-0.5 size-4 shrink-0 text-brand-600' : 'mt-0.5 size-4 shrink-0 text-muted'}
+                    />
+                    {nb(feature)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <ul
+      class="mx-auto mt-10 grid max-w-md grid-cols-3 gap-4 text-sm text-muted sm:flex sm:max-w-4xl sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-8 sm:gap-y-3"
+      data-reveal
+      style="--reveal-delay: 160ms"
+    >
+      {
+        assurances.map((item) => (
+          <li class="flex flex-col items-center gap-2 text-center text-balance sm:flex-row">
+            <Icon name={item.icon} class="size-4 shrink-0" />
+            {item.label}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,193 @@
+---
+/**
+ * Comparativa: feature table SmartSavings vs. finance apps vs. spreadsheets.
+ * The table keeps a minimum width; on narrow screens its wrapper scrolls
+ * (never the page), the feature column stays pinned and a fade hints at
+ * the hidden columns. The script only toggles those scroll hints.
+ */
+import Icon, { type IconName } from './ui/Icon.astro';
+import SectionHeader from './ui/SectionHeader.astro';
+import Logo from './ui/Logo.astro';
+
+/** true = sí, false = no, string = descriptive value. */
+type Value = boolean | string;
+
+interface Row {
+  icon: IconName;
+  feature: string;
+  values: [Value, Value, Value];
+}
+
+const columns = [
+  { name: 'SmartSavings', detail: 'Desde WhatsApp' },
+  { name: 'Apps de finanzas', detail: 'App en tu celular' },
+  { name: 'Hojas de cálculo', detail: 'Excel o Google Sheets' },
+];
+
+const rows: Row[] = [
+  {
+    icon: 'message-square',
+    feature: 'Registrar un gasto',
+    values: ['Un mensaje', 'Abrir la app y llenar campos', 'Abrir el archivo y llenar celdas'],
+  },
+  { icon: 'mic', feature: 'Notas de voz', values: [true, false, false] },
+  { icon: 'receipt', feature: 'Lectura de recibos con IA', values: [true, 'Parcial', false] },
+  { icon: 'pencil', feature: 'Corrección conversacional', values: [true, false, false] },
+  { icon: 'bell', feature: 'Recordatorios automáticos', values: [true, 'Parcial', false] },
+  { icon: 'bar-chart', feature: 'Resumen diario', values: [true, true, 'Manual'] },
+  { icon: 'smartphone', feature: 'Sin instalar nada nuevo', values: [true, false, false] },
+];
+
+/** Pinned feature column: opaque so scrolled cells pass underneath it. */
+const stickyCell =
+  'sticky left-0 z-10 border-r border-r-transparent bg-surface transition-colors duration-200 group-data-[scrolled]:border-r-line';
+const highlight = 'bg-brand-50/60';
+---
+
+<section id="comparativa" aria-labelledby="comparativa-title" class="section-y border-t border-line bg-surface">
+  <div class="container-page">
+    <SectionHeader
+      id="comparativa-title"
+      eyebrow="Comparativa"
+      title="Hecho para que no lo abandones."
+      description="La constancia depende de la fricción. Así se compara SmartSavings con las alternativas de siempre."
+    />
+
+    <div class="group mt-12 sm:mt-16" data-reveal data-compare>
+      <p class="mb-3 flex items-center justify-end gap-1.5 text-xs text-muted sm:hidden" aria-hidden="true">
+        Desliza para comparar
+        <Icon name="arrow-right" class="size-3.5" />
+      </p>
+
+      <div class="card relative overflow-hidden">
+        <div class="overflow-x-auto overscroll-x-contain" data-compare-scroll>
+          <table class="w-full min-w-[680px] table-fixed border-separate border-spacing-0 text-left">
+            <caption class="sr-only">
+              Comparación de SmartSavings con apps de finanzas y hojas de cálculo
+            </caption>
+            <colgroup>
+              <col class="w-[164px] sm:w-[30%]" />
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr>
+                <th
+                  scope="col"
+                  class:list={[
+                    stickyCell,
+                    'border-b border-b-line px-4 py-5 align-bottom font-mono text-[11px] font-medium tracking-wider text-muted uppercase sm:px-6',
+                  ]}
+                >
+                  Función
+                </th>
+                {
+                  columns.map((column, i) => (
+                    <th
+                      scope="col"
+                      class:list={['border-b border-line px-4 py-5 align-bottom font-normal sm:px-6', i === 0 && highlight]}
+                    >
+                      <span class="flex items-center gap-2.5">
+                        {i === 0 && <Logo showWordmark={false} />}
+                        <span class="min-w-0">
+                          <span class="block text-sm font-semibold tracking-[-0.01em] text-ink">{column.name}</span>
+                          <span class="block text-xs text-muted">{column.detail}</span>
+                        </span>
+                      </span>
+                    </th>
+                  ))
+                }
+              </tr>
+            </thead>
+            <tbody>
+              {
+                rows.map((row, r) => (
+                  <tr>
+                    <th
+                      scope="row"
+                      class:list={[
+                        stickyCell,
+                        'px-4 py-4 text-sm font-medium text-ink sm:px-6',
+                        r > 0 && 'border-t border-t-line-soft',
+                      ]}
+                    >
+                      <span class="flex items-center gap-3">
+                        <Icon name={row.icon} class="size-4 shrink-0 text-muted" />
+                        {row.feature}
+                      </span>
+                    </th>
+                    {row.values.map((value, i) => (
+                      <td
+                        class:list={[
+                          'px-4 py-4 align-middle text-sm text-body sm:px-6',
+                          r > 0 && 'border-t border-line-soft',
+                          i === 0 && highlight,
+                          i === 0 && typeof value === 'string' && 'font-medium text-ink',
+                        ]}
+                      >
+                        {value === true && (
+                          <span class="flex h-5 items-center">
+                            <Icon name="check" class="size-5 text-brand-600" strokeWidth={2.25} />
+                            <span class="sr-only">Sí</span>
+                          </span>
+                        )}
+                        {value === false && (
+                          <span class="flex h-5 items-center">
+                            <Icon name="x" class="size-4 text-subtle" strokeWidth={2} />
+                            <span class="sr-only">No</span>
+                          </span>
+                        )}
+                        {typeof value === 'string' && value}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <span
+          class="pointer-events-none absolute inset-y-0 right-0 w-12 bg-linear-to-l from-surface to-transparent opacity-0 transition-opacity duration-200 group-data-[more]:opacity-100"
+          aria-hidden="true"
+        ></span>
+      </div>
+    </div>
+
+    <p class="mt-4 text-center text-xs text-muted">
+      Comparación general según el funcionamiento habitual de cada alternativa; algunas apps ofrecen funciones similares.
+    </p>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-compare]');
+  const scroller = root?.querySelector<HTMLElement>('[data-compare-scroll]');
+
+  if (root && scroller) {
+    // Scroll hints: pinned-column divider once scrolled, right-edge fade
+    // while columns remain hidden.
+    // A scrollable region is also made keyboard-focusable only when it scrolls.
+    const sync = () => {
+      const overflow = scroller.scrollWidth - scroller.clientWidth > 1;
+      const atEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 1;
+      root.toggleAttribute('data-scrolled', scroller.scrollLeft > 0);
+      root.toggleAttribute('data-more', overflow && !atEnd);
+
+      if (overflow) {
+        scroller.setAttribute('tabindex', '0');
+        scroller.setAttribute('role', 'region');
+        scroller.setAttribute('aria-label', 'Tabla comparativa, desplázate horizontalmente');
+      } else {
+        scroller.removeAttribute('tabindex');
+        scroller.removeAttribute('role');
+        scroller.removeAttribute('aria-label');
+      }
+    };
+
+    scroller.addEventListener('scroll', sync, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(sync).observe(scroller);
+    sync();
+  }
+</script>

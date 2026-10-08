@@ -1,73 +1,186 @@
 ---
-// HowItWorks.astro
+/**
+ * Cómo funciona: three numbered step cards (ordered list). Each card ends
+ * in a small decorative product visual (aria-hidden); the meaning lives in
+ * the card text. On md+ chevron markers sit in the gaps between cards.
+ * Each visual panel is a size container, so secondary details (metadata,
+ * waveform, "Editar") only appear when the card is wide enough.
+ */
+import Icon, { type IconName } from './ui/Icon.astro';
+import Button from './ui/Button.astro';
+import SectionHeader from './ui/SectionHeader.astro';
+import { SITE, waLink, WA_START_TEXT } from '../lib/site';
+
+type StepId = 'start' | 'send' | 'confirm';
+
+/** "9:00 p. m." with non-breaking spaces so a time never splits across lines. */
+const time = (hm: string) => `${hm}\u00a0p.\u00a0m.`;
+
+interface Step {
+  id: StepId;
+  icon: IconName;
+  title: string;
+  description: string;
+}
+
+const steps: Step[] = [
+  {
+    id: 'start',
+    icon: 'message-circle',
+    title: 'Escribe a SmartSavings',
+    description: 'Abre el chat desde esta página y envía un saludo. Tu perfil se crea al instante con tu número.',
+  },
+  {
+    id: 'send',
+    icon: 'send',
+    title: 'Envía tu gasto como quieras',
+    description: 'Un audio, una foto del recibo o un texto. La IA identifica monto, categoría, comercio y fecha.',
+  },
+  {
+    id: 'confirm',
+    icon: 'check-circle',
+    title: 'Confirma con un toque',
+    description: `Revisa el resumen, confírmalo y listo. Recibe cierres a las ${time('2:00')} y ${time('8:00')}, y tu balance a las ${time('9:00')}`,
+  },
+];
+
+const inputs: { icon: IconName; label: string; meta: string; active?: boolean }[] = [
+  { icon: 'mic', label: 'Nota de voz', meta: '0:04' },
+  { icon: 'camera', label: 'recibo.jpg', meta: 'Foto' },
+  { icon: 'type', label: '«taxi 12 mil»', meta: 'Texto', active: true },
+];
+const wave = [45, 80, 100, 60, 90, 40, 70];
+
+const cop = (n: number) => `$${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(n)}`;
+
+const panel = '@container flex flex-1 flex-col justify-center rounded-xl border border-line-soft bg-canvas p-3 lg:p-4';
+const row = 'flex h-9 items-center rounded-lg border bg-surface shadow-card';
+const micro = 'font-mono text-[11px] tracking-wider text-muted uppercase';
 ---
 
-<section id="como-funciona" class="py-24 bg-white relative">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    
-    <!-- Section Header -->
-    <div class="text-center max-w-3xl mx-auto mb-20 space-y-4">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-bold text-[#2C4A5E]">
-        <span class="w-2 h-2 rounded-full bg-[#7FBDA3]"></span>
-        <span>EXPERIENCIA FLUÍDA</span>
+<section id="como-funciona" aria-labelledby="como-funciona-title" class="section-y border-y border-line bg-canvas">
+  <div class="container-page">
+    <SectionHeader
+      id="como-funciona-title"
+      eyebrow="Cómo funciona"
+      title="Tres pasos."
+      titleMuted="Cero formularios."
+      description="Sin instalar nada ni crear contraseñas: tu número de WhatsApp es tu cuenta."
+    />
+
+    <div class="relative mt-12 sm:mt-16">
+      <ol role="list" class="grid gap-4 md:grid-cols-3 lg:gap-6">
+        {
+          steps.map((step, i) => (
+            <li class="card flex flex-col p-6 md:p-5 lg:p-6" data-reveal style={`--reveal-delay: ${i * 80}ms`}>
+              <div class="flex items-center justify-between">
+                <span class="inline-flex size-10 items-center justify-center rounded-xl border border-line bg-canvas text-ink">
+                  <Icon name={step.icon} class="size-5" />
+                </span>
+                <span class="tabular font-mono text-sm text-muted">
+                  <span class="sr-only">Paso </span>
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </div>
+              <h3 class="mt-5 text-base font-medium tracking-[-0.01em] text-ink">{step.title}</h3>
+              <p class="mt-2 text-[15px] leading-relaxed text-pretty text-body">{step.description}</p>
+
+              <div class="mt-auto flex flex-1 flex-col pt-6" aria-hidden="true">
+                {step.id === 'start' && (
+                  <div class:list={[panel, 'gap-2.5']}>
+                    <div class:list={[row, 'gap-2 border-line px-2.5 @min-[12rem]:gap-2.5 @min-[12rem]:px-3']}>
+                      <Icon name="whatsapp" class="size-4 shrink-0 text-brand-600" />
+                      <span class="truncate font-mono text-[11px] tracking-tight text-body @min-[13rem]:text-[12px] @min-[13rem]:tracking-normal">
+                        wa.me/{SITE.whatsappNumber}
+                      </span>
+                      <Icon name="arrow-up-right" class="ml-auto hidden size-3.5 shrink-0 text-muted @min-[14rem]:block" />
+                    </div>
+                    <div class="flex flex-col gap-1.5 text-[13px]">
+                      <p class="flex items-baseline gap-2 self-end rounded-2xl rounded-br-md bg-zinc-200/70 px-3 py-1.5 text-ink">
+                        Hola
+                        <span class="font-mono text-[10px] text-body">9:41</span>
+                      </p>
+                      <div class="max-w-[92%] self-start rounded-2xl rounded-bl-md border border-line bg-surface px-3 py-2 shadow-card">
+                        <p class="flex items-center gap-1.5 font-medium text-ink">
+                          <Icon name="check-circle" class="size-3.5 shrink-0 text-brand-600" />
+                          Perfil creado
+                        </p>
+                        <p class="mt-0.5 text-[12px] leading-snug text-body">Envía tu primer gasto.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {step.id === 'send' && (
+                  <ul class:list={[panel, 'gap-2']}>
+                    {inputs.map((input) => (
+                      <li class:list={[row, 'gap-2.5 px-3', input.active ? 'border-brand-200 ring-2 ring-brand-50' : 'border-line']}>
+                        <Icon
+                          name={input.icon}
+                          class:list={['size-4 shrink-0', input.active ? 'text-brand-600' : 'text-muted']}
+                        />
+                        <span class="truncate text-[13px] font-medium text-ink">{input.label}</span>
+                        <span class="ml-auto hidden shrink-0 items-center gap-2 @min-[12rem]:flex">
+                          {input.icon === 'mic' && (
+                            <span class="hidden h-3 items-center gap-[2px] @min-[14rem]:flex">
+                              {wave.map((h) => (
+                                <span class="w-[2px] rounded-full bg-zinc-300" style={`height: ${h}%`} />
+                              ))}
+                            </span>
+                          )}
+                          <span class="tabular font-mono text-[11px] text-muted">{input.meta}</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {step.id === 'confirm' && (
+                  <div class={panel}>
+                    <div class="rounded-lg border border-line bg-surface p-3 shadow-elevated">
+                      <div class="flex items-center justify-between gap-2">
+                        <span class={micro}>Resumen</span>
+                        <span class="font-mono text-[11px] text-muted">Hoy</span>
+                      </div>
+                      <div class="mt-2 flex flex-wrap items-baseline justify-between gap-x-2">
+                        <span class="text-sm font-medium text-ink">Transporte</span>
+                        <span class="tabular text-base font-semibold tracking-[-0.01em] text-ink">{cop(12000)}</span>
+                      </div>
+                      <p class="text-[12px] text-muted">Taxi</p>
+                      <div class="mt-3 flex gap-1.5 border-t border-line-soft pt-3 text-[12px] font-medium">
+                        <span class="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-full bg-ink px-3 text-white">
+                          <Icon name="check" class="size-3.5 text-brand-400" strokeWidth={2.25} />
+                          Confirmar
+                        </span>
+                        <span class="hidden h-7 flex-1 items-center justify-center rounded-full border border-line px-3 text-body @min-[11rem]:inline-flex">
+                          Editar
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="pointer-events-none absolute inset-x-0 top-[31px] hidden h-7 md:block" aria-hidden="true" data-reveal style="--reveal-delay: 240ms">
+        <span class="absolute top-0 left-[calc((100%_-_2rem)/3_+_0.5rem)] flex size-7 -translate-x-1/2 items-center justify-center rounded-full border border-line bg-surface text-muted shadow-card lg:left-[calc((100%_-_3rem)/3_+_0.75rem)]">
+          <Icon name="chevron-right" class="size-3.5" />
+        </span>
+        <span class="absolute top-0 left-[calc((100%_-_2rem)*2/3_+_1.5rem)] flex size-7 -translate-x-1/2 items-center justify-center rounded-full border border-line bg-surface text-muted shadow-card lg:left-[calc((100%_-_3rem)*2/3_+_2.25rem)]">
+          <Icon name="chevron-right" class="size-3.5" />
+        </span>
       </div>
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#2C4A5E] tracking-tight">
-        Control total en <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#6BA5C8] to-[#7FBDA3]">tres simples pasos</span>
-      </h2>
-      <p class="text-base sm:text-lg text-[#4A5568]">
-        Sin instalaciones, sin descargas pesadas en la App Store y sin contraseñas que olvidar.
+    </div>
+
+    <div class="mt-12 flex flex-col items-center gap-3 sm:mt-14 sm:flex-row sm:justify-center sm:gap-5" data-reveal>
+      <Button href={waLink(WA_START_TEXT)} icon="whatsapp">Probar ahora en WhatsApp</Button>
+      <p class="inline-flex items-center gap-1.5 text-sm text-muted">
+        <Icon name="clock" class="size-4" />
+        Toma menos de un minuto.
       </p>
     </div>
-
-    <!-- 3-Step Process Grid -->
-    <div class="grid md:grid-cols-3 gap-8 relative">
-      
-      <!-- Connecting line for desktop -->
-      <div class="hidden md:block absolute top-1/3 left-1/6 right-1/6 h-0.5 border-t-2 border-dashed border-[#6BA5C8]/30 -z-0"></div>
-
-      <!-- STEP 1 -->
-      <div class="glass-panel rounded-3xl p-8 border border-slate-100 relative z-10 hover:-translate-y-1 transition-transform group">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6BA5C8] to-[#4A8EB8] text-white flex items-center justify-center font-black text-2xl mb-6 shadow-lg shadow-[#6BA5C8]/25 group-hover:scale-105 transition-transform">
-          01
-        </div>
-        <div class="inline-block px-3 py-1 rounded-full bg-[#6BA5C8]/10 text-[#6BA5C8] text-xs font-bold mb-3">
-          1 toque y listo
-        </div>
-        <h3 class="text-xl font-black text-[#2C4A5E] mb-3">Abre el Chat en WhatsApp</h3>
-        <p class="text-xs sm:text-sm text-[#4A5568] leading-relaxed">
-          Toca en "Chatear con SmartSavings" y envía tu primer mensaje. Tu perfil financiero se crea en PostgreSQL (Supabase) al instante usando tu número de teléfono.
-        </p>
-      </div>
-
-      <!-- STEP 2 -->
-      <div class="glass-panel rounded-3xl p-8 border border-slate-100 relative z-10 hover:-translate-y-1 transition-transform group">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7FBDA3] to-[#5AA688] text-white flex items-center justify-center font-black text-2xl mb-6 shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition-transform">
-          02
-        </div>
-        <div class="inline-block px-3 py-1 rounded-full bg-[#7FBDA3]/15 text-[#2C4A5E] text-xs font-bold mb-3">
-          Multimodal con IA
-        </div>
-        <h3 class="text-xl font-black text-[#2C4A5E] mb-3">Registra en 2 Segundos</h3>
-        <p class="text-xs sm:text-sm text-[#4A5568] leading-relaxed">
-          Habla, escribe o envía fotos de tus facturas. Whisper transcribe tus audios, DeepSeek clasifica gastos e ingresos y Gemini 2.5 Flash lee los recibos de compra.
-        </p>
-      </div>
-
-      <!-- STEP 3 -->
-      <div class="glass-panel rounded-3xl p-8 border border-slate-100 relative z-10 hover:-translate-y-1 transition-transform group">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#D4A574] to-[#B88752] text-white flex items-center justify-center font-black text-2xl mb-6 shadow-lg shadow-amber-500/25 group-hover:scale-105 transition-transform">
-          03
-        </div>
-        <div class="inline-block px-3 py-1 rounded-full bg-[#D4A574]/15 text-[#8F5E28] text-xs font-bold mb-3">
-          Tranquilidad total
-        </div>
-        <h3 class="text-xl font-black text-[#2C4A5E] mb-3">Detén la Fuga Quincenal</h3>
-        <p class="text-xs sm:text-sm text-[#4A5568] leading-relaxed">
-          Recibe cierres automáticos a las 2 PM y 8 PM para que no olvides nada, y resúmenes con gráficos a las 9 PM con tu saldo protegido para llegar sobrado de dinero.
-        </p>
-      </div>
-
-    </div>
-
   </div>
 </section>

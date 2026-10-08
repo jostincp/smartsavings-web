@@ -1,47 +1,30 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
-import Hero3D from '../components/Hero3D.astro';
+import Hero from '../components/Hero.astro';
+import Benefits from '../components/Benefits.astro';
 import HowItWorks from '../components/HowItWorks.astro';
-import SimulatorWhatsApp from '../components/SimulatorWhatsApp.astro';
-import Ecosystem3D from '../components/Ecosystem3D.astro';
-import SavingsCalculator from '../components/SavingsCalculator.astro';
-import ComparisonSection from '../components/ComparisonSection.astro';
-import PricingSection from '../components/PricingSection.astro';
-import FaqSection from '../components/FaqSection.astro';
+import Calculator from '../components/Calculator.astro';
+import Comparison from '../components/Comparison.astro';
+import Pricing from '../components/Pricing.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
 import Footer from '../components/Footer.astro';
 ---
 
-<Layout title="SmartSavings 💰 | Tu Asistente Financiero Inteligente en WhatsApp">
-  <!-- Sticky Glassmorphic Navbar -->
+<Layout>
   <Navbar />
 
-  <main>
-    <!-- Hero Section 3D con Parallax & Mascot -->
-    <Hero3D />
-
-    <!-- Cómo Funciona (3 Pasos de Cero Fricción) -->
+  <main id="contenido">
+    <Hero />
+    <Benefits />
     <HowItWorks />
-
-    <!-- Simulador en Vivo de WhatsApp con Dashboard Reactivo -->
-    <SimulatorWhatsApp />
-
-    <!-- Ecosistema 3D (Arquitectura Multi-Agente Inspirada en Referencia) -->
-    <Ecosystem3D />
-
-    <!-- Calculadora Dinámica de Fuga de Dinero Quincenal -->
-    <SavingsCalculator />
-
-    <!-- Comparativa: WhatsApp vs Apps Tradicionales vs Excel -->
-    <ComparisonSection />
-
-    <!-- Precios & Acceso Gratuito a la Beta -->
-    <PricingSection />
-
-    <!-- Preguntas Frecuentes Interactivas -->
-    <FaqSection />
+    <Calculator />
+    <Comparison />
+    <Pricing />
+    <Faq />
+    <FinalCta />
   </main>
 
-  <!-- Footer Profesional con Botón Flotante de WhatsApp -->
   <Footer />
 </Layout>

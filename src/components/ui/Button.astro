@@ -47,11 +47,11 @@ const iconSize = size === 'sm' ? 'size-4' : 'size-[18px]';
   {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
   {...rest}
 >
-  {icon && <Icon name={icon} class={iconSize} />}
+  {icon && <Icon name={icon} class={`${iconSize} shrink-0`} />}
   <slot />
   {
     iconRight && (
-      <Icon name={iconRight} class={`${iconSize} transition-transform duration-200 group-hover:translate-x-0.5`} />
+      <Icon name={iconRight} class={`${iconSize} shrink-0 transition-transform duration-200 group-hover:translate-x-0.5`} />
     )
   }
 </a>

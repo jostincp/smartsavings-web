@@ -1,0 +1,101 @@
+---
+// Hero: centered headline, primary CTAs and the interactive WhatsApp demo.
+import Button from './ui/Button.astro';
+import Icon from './ui/Icon.astro';
+import WhatsAppDemo from './WhatsAppDemo.astro';
+import { waLink, WA_START_TEXT } from '../lib/site';
+
+const TRUST = ['Sin descargar apps', 'Sin claves bancarias', 'Gratis durante la beta'];
+
+const STACK = [
+  { name: 'WhatsApp', role: 'Canal' },
+  { name: 'Whisper', role: 'Voz a texto' },
+  { name: 'Gemini 2.5 Flash', role: 'Lectura de recibos' },
+  { name: 'DeepSeek', role: 'Clasificación' },
+  { name: 'Supabase', role: 'Base de datos' },
+];
+---
+
+<section id="inicio" aria-labelledby="hero-title" class="relative overflow-hidden pt-28 pb-20 sm:pt-36 sm:pb-28">
+  <div class="pointer-events-none absolute inset-x-0 top-0 h-[720px]" aria-hidden="true">
+    <div class="absolute inset-0 bg-grid mask-radial-fade"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_0%,var(--color-brand-100),transparent_70%)] opacity-40"></div>
+  </div>
+
+  <div class="relative container-page">
+    <div class="mx-auto flex max-w-4xl flex-col items-center text-center">
+      <a
+        href="#precios"
+        class="group relative inline-flex items-center gap-2 rounded-full border border-line bg-surface py-1.5 pr-2.5 pl-3 text-sm text-body shadow-card transition-colors duration-200 after:absolute after:-inset-y-1 after:inset-x-0 hover:border-zinc-300 hover:text-ink motion-safe:animate-fade-up"
+      >
+        <span class="size-1.5 shrink-0 rounded-full bg-brand-500 animate-pulse-dot" aria-hidden="true"></span>
+        <span class="font-medium text-ink">Beta abierta</span>
+        <span class="h-3.5 w-px bg-line" aria-hidden="true"></span>
+        <span>Gratis de por vida<span class="hidden sm:inline"> si entras ahora</span></span>
+        <Icon
+          name="chevron-right"
+          class="size-4 text-muted transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-ink"
+        />
+      </a>
+
+      <h1
+        id="hero-title"
+        class="mt-7 text-[2.5rem] leading-[1.05] font-semibold tracking-[-0.045em] text-balance text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] sm:mt-8 sm:text-6xl lg:text-7xl"
+      >
+        Registra cada gasto
+        <span class="text-muted sm:block">con un solo mensaje.</span>
+      </h1>
+
+      <p
+        class="mt-6 max-w-2xl text-base leading-relaxed text-pretty text-body motion-safe:animate-fade-up motion-safe:[animation-delay:120ms] sm:text-lg sm:text-balance"
+      >
+        Envía un audio, una foto del recibo o un texto a SmartSavings por WhatsApp. La&nbsp;IA extrae el monto, la categoría
+        y el comercio; tú solo confirmas.
+      </p>
+
+      <div
+        class="mt-9 flex w-full flex-col gap-3 motion-safe:animate-fade-up motion-safe:[animation-delay:180ms] sm:w-auto sm:flex-row sm:justify-center"
+      >
+        <Button href={waLink(WA_START_TEXT)} icon="whatsapp" size="lg" class="w-full sm:w-auto">
+          Empezar gratis en WhatsApp
+        </Button>
+        <Button href="#como-funciona" variant="secondary" size="lg" iconRight="arrow-right" class="w-full sm:w-auto">
+          Ver cómo funciona
+        </Button>
+      </div>
+
+      <ul
+        class="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted motion-safe:animate-fade-up motion-safe:[animation-delay:240ms]"
+      >
+        {
+          TRUST.map((item) => (
+            <li class="inline-flex items-center gap-1.5">
+              <Icon name="check" class="size-4 text-brand-600" strokeWidth={2.25} />
+              {item}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="mt-14 motion-safe:animate-fade-up motion-safe:[animation-delay:320ms] sm:mt-20">
+      <WhatsAppDemo />
+    </div>
+
+    <div class="mt-16 sm:mt-24">
+      <p id="hero-stack" class="text-center">
+        <span class="eyebrow">Impulsado por</span>
+      </p>
+      <ul aria-labelledby="hero-stack" class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-6 sm:gap-x-12 lg:gap-x-16">
+        {
+          STACK.map((tech) => (
+            <li class="flex w-[calc(50%-0.75rem)] flex-col items-center gap-1 text-center sm:w-auto">
+              <span class="text-[17px] font-semibold tracking-[-0.02em] text-body">{tech.name}</span>
+              <span class="font-mono text-[11px] tracking-wider text-muted uppercase">{tech.role}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

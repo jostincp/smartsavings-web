@@ -1,0 +1,115 @@
+---
+/**
+ * Preguntas frecuentes: sticky intro + contact card on the left, native
+ * <details> accordion on the right. The same data feeds the FAQPage JSON-LD.
+ */
+import Icon from './ui/Icon.astro';
+import Button from './ui/Button.astro';
+import SectionHeader from './ui/SectionHeader.astro';
+import { waLink } from '../lib/site';
+
+interface Faq {
+  question: string;
+  answer: string;
+}
+
+const faqs: Faq[] = [
+  {
+    question: '¿Necesito descargar una aplicación?',
+    answer:
+      'No. SmartSavings funciona dentro de WhatsApp, la app que ya usas todos los días. No hay nada que instalar ni contraseñas que recordar: tu cuenta es tu número de WhatsApp.',
+  },
+  {
+    question: '¿Es seguro? ¿Tienen acceso a mis cuentas bancarias?',
+    answer:
+      'No tenemos acceso a tu banco. Nunca te pediremos contraseñas, claves dinámicas ni datos de acceso bancario: solo registras lo que tú decides compartir. La información se guarda en PostgreSQL (Supabase), cifrada en tránsito y en reposo.',
+  },
+  {
+    question: '¿Cómo funciona el registro de recibos con IA?',
+    answer:
+      'Toma una foto del recibo o la tirilla y envíala por WhatsApp. Gemini 2.5 Flash lee la imagen, extrae el total, el comercio y los productos, y te devuelve un resumen para que lo confirmes antes de guardarlo.',
+  },
+  {
+    question: '¿Qué pasa si me equivoco en un monto?',
+    answer:
+      'Lo corriges conversando. Escribe algo como «no, eran 15 mil» o «borra el último gasto» y SmartSavings ajusta el registro y recalcula lo que te queda de presupuesto.',
+  },
+  {
+    question: '¿A qué hora recibo recordatorios y resúmenes?',
+    answer:
+      'Recibes recordatorios a las 2:00 p. m. y a las 8:00 p. m. para que no se te escape ningún gasto. A las 9:00 p. m. llega tu resumen del día con los totales por categoría y lo que te queda de presupuesto para la quincena.',
+  },
+  {
+    question: '¿Cuánto cuesta?',
+    answer:
+      'Nada durante la beta. Quienes se unen en esta etapa conservan el plan Beta gratis de por vida, con todas las funciones actuales. Más adelante llegará el plan Pro, y los usuarios beta tendrán un precio preferencial.',
+  },
+];
+
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(({ question, answer }) => ({
+    '@type': 'Question',
+    name: question,
+    acceptedAnswer: { '@type': 'Answer', text: answer },
+  })),
+}).replace(/</g, '\\u003c');
+---
+
+<section id="preguntas" aria-labelledby="preguntas-title" class="section-y bg-surface">
+  <div class="container-page grid gap-12 lg:grid-cols-12">
+    <div class="contents lg:sticky lg:top-24 lg:col-span-4 lg:block lg:self-start">
+      <SectionHeader
+        id="preguntas-title"
+        align="left"
+        eyebrow="Preguntas frecuentes"
+        title="Lo que necesitas saber."
+        description="Respuestas cortas a las dudas más comunes antes de empezar."
+      />
+
+      <div
+        class="order-last rounded-2xl border border-line bg-canvas p-6 sm:flex sm:items-center sm:gap-5 lg:order-none lg:mt-8 lg:block"
+        data-reveal
+        style="--reveal-delay: 80ms"
+      >
+        <span class="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-ink">
+          <Icon name="message-circle" class="size-5" />
+        </span>
+        <div class="mt-4 sm:mt-0 lg:mt-4">
+          <h3 class="text-base font-medium tracking-[-0.01em] text-ink">¿Tienes otra pregunta?</h3>
+          <p class="mt-1.5 text-[15px] leading-relaxed text-body">Escríbenos por WhatsApp y te ayudamos a resolverla.</p>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          href={waLink('Hola SmartSavings, tengo una pregunta')}
+          icon="whatsapp"
+          class="mt-5 sm:mt-0 sm:ml-auto lg:mt-5 lg:ml-0"
+        >
+          Escríbenos
+        </Button>
+      </div>
+    </div>
+
+    <div class="divide-y divide-line border-y border-line lg:col-span-8 lg:self-start" data-reveal>
+      {
+        faqs.map(({ question, answer }) => (
+          <details name="preguntas" class="group">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-base font-medium tracking-[-0.01em] text-ink select-none">
+              <span class="text-pretty">{question}</span>
+              <span class="inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-line text-body transition duration-300 ease-out-soft group-open:rotate-45 group-open:border-zinc-300 group-open:bg-canvas group-open:text-ink group-hover:border-zinc-300 group-hover:text-ink">
+                <Icon name="plus" class="size-4" />
+              </span>
+            </summary>
+            <p class="pr-10 pb-5 text-[15px] leading-relaxed text-pretty text-body group-open:animate-fade-up sm:pr-14">
+              {answer}
+            </p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+
+  <script is:inline type="application/ld+json" set:html={jsonLd} />
+</section>

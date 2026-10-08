@@ -1,0 +1,390 @@
+---
+/**
+ * Calculadora: estimates how much of a monthly income leaks into
+ * unregistered expenses and how much could be recovered. Defaults are
+ * server-rendered; the script only updates values on input.
+ * Model (shown to the user as an estimate): leak = 20 % of income,
+ * recoverable = 70 % of the leak, projection = recoverable × 12.
+ */
+import Icon from './ui/Icon.astro';
+import Button from './ui/Button.astro';
+import SectionHeader from './ui/SectionHeader.astro';
+import { waLink, WA_START_TEXT } from '../lib/site';
+
+const MIN = 1_500_000;
+const MAX = 12_000_000;
+const STEP = 250_000;
+const DEFAULT = 4_000_000;
+const LEAK_RATE = 0.2;
+const RECOVERY_RATE = 0.7;
+
+const presets = [2_000_000, 4_000_000, 6_000_000, 8_000_000];
+
+const cop = (n: number) => `$${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(n)}`;
+const pct = ((DEFAULT - MIN) / (MAX - MIN)) * 100;
+
+const leak = Math.round(DEFAULT * LEAK_RATE);
+const recoverable = Math.round(leak * RECOVERY_RATE);
+const yearly = recoverable * 12;
+
+/** Ruler ticks every $500.000; whole even millions are taller. */
+const ticks = Array.from({ length: (MAX - MIN) / 500_000 + 1 }, (_, i) => MIN + i * 500_000).map(
+  (value) => value % 2_000_000 === 0,
+);
+
+/**
+ * Cumulative savings chart, month 1 → 12. The scale is fixed to the
+ * slider's maximum, so bars grow with the income (--fill = 0…1).
+ */
+const months = Array.from({ length: 12 }, (_, i) => ((i + 1) / 12) * 100);
+const maxProjection = Math.round(Math.round(MAX * LEAK_RATE) * RECOVERY_RATE) * 12;
+const fill = yearly / maxProjection;
+
+const microLabel = 'font-mono text-[11px] tracking-wider text-muted uppercase';
+---
+
+<section id="calculadora" aria-labelledby="calculadora-title" class="section-y bg-surface">
+  <div class="container-page">
+    <SectionHeader
+      id="calculadora-title"
+      eyebrow="Calculadora"
+      title="¿Cuánto se te escapa cada mes?"
+      description="Los gastos pequeños que no registras suman. Mueve el control y estima cuánto podrías recuperar."
+    />
+
+    <div
+      class="mt-12 grid overflow-hidden rounded-3xl border border-line bg-surface shadow-elevated sm:mt-16 lg:grid-cols-5"
+      data-reveal
+      data-calculator
+      data-min={MIN}
+      data-max={MAX}
+      data-leak-rate={LEAK_RATE}
+      data-recovery-rate={RECOVERY_RATE}
+      data-max-projection={maxProjection}
+    >
+      <div class="flex flex-col p-6 sm:p-8 lg:col-span-3 lg:p-10">
+        <div class="flex items-center justify-between gap-3">
+          <label for="calc-income" class="text-sm font-medium text-ink">Tu ingreso mensual</label>
+          <span class={microLabel}>Aproximado</span>
+        </div>
+
+        <p class="mt-3 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+          <span
+            class="tabular text-[2.5rem] leading-none font-semibold tracking-[-0.045em] text-ink min-[380px]:text-[2.75rem] sm:text-6xl"
+            data-income
+          >
+            {cop(DEFAULT)}
+          </span>
+          <span class="font-mono text-sm text-muted">COP</span>
+        </p>
+
+        <div class="mt-9">
+          <input
+            id="calc-income"
+            type="range"
+            min={MIN}
+            max={MAX}
+            step={STEP}
+            value={DEFAULT}
+            aria-valuetext={`${cop(DEFAULT)} COP`}
+            class="calc-range block w-full cursor-pointer"
+            style={`--pct: ${pct}`}
+            data-range
+          />
+          <div class="mt-1 flex justify-between px-[11px]" aria-hidden="true">
+            {ticks.map((major) => <span class:list={['w-px', major ? 'h-2 bg-zinc-300' : 'h-1 bg-line']} />)}
+          </div>
+          <div class="tabular mt-2 flex justify-between font-mono text-xs text-muted">
+            <span>{cop(MIN)}</span>
+            <span>{cop(MAX)}</span>
+          </div>
+        </div>
+
+        <div class="mt-7">
+          <p id="calc-presets-label" class="text-sm text-muted">Valores rápidos</p>
+          <div class="mt-3 flex flex-wrap gap-2" role="group" aria-labelledby="calc-presets-label">
+            {
+              presets.map((value) => (
+                <button
+                  type="button"
+                  class="tabular inline-flex h-10 items-center rounded-full border border-line bg-surface px-4 text-sm font-medium text-body transition-colors duration-200 hover:border-zinc-300 hover:text-ink aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-white"
+                  aria-pressed={value === DEFAULT ? 'true' : 'false'}
+                  data-preset={value}
+                >
+                  {cop(value)}
+                </button>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="mt-9 flex flex-1 flex-col border-t border-line-soft pt-6" aria-hidden="true">
+          <div class="flex items-center justify-between gap-3">
+            <span class={microLabel}>Ahorro acumulado</span>
+            <span class="font-mono text-[11px] text-muted">Próximos 12 meses</span>
+          </div>
+          <div class="relative mt-4 min-h-32 flex-1 border-b border-line" style={`--fill: ${fill}`} data-chart>
+            {
+              [25, 50, 75, 100].map((y) => (
+                <span class="absolute inset-x-0 border-t border-dashed border-line" style={`bottom: ${y}%`} />
+              ))
+            }
+            <div class="absolute inset-0 flex items-end gap-1.5 sm:gap-2">
+              {
+                months.map((height, i) => (
+                  <span
+                    class:list={[
+                      'flex-1 rounded-t-[3px] transition-[height] duration-500 ease-out-soft',
+                      i === months.length - 1 ? 'bg-brand-500' : 'bg-zinc-200',
+                    ]}
+                    style={`height: calc(var(--fill) * ${height}%)`}
+                  />
+                ))
+              }
+            </div>
+          </div>
+          <div class="mt-2 flex justify-between font-mono text-[11px] text-muted">
+            <span>Mes 1</span>
+            <span>Mes 6</span>
+            <span>Mes 12</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col border-t border-line bg-canvas p-6 sm:p-8 lg:col-span-2 lg:border-t-0 lg:border-l lg:px-8 lg:py-10">
+        <p class={microLabel}>Tu estimación</p>
+
+        <dl class="mt-2">
+          <div class="flex items-center gap-3 border-b border-line py-4">
+            <dt class="flex min-w-0 flex-1 items-center gap-3 text-sm text-body">
+              <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-ink">
+                <Icon name="trending-down" class="size-4" />
+              </span>
+              Fuga estimada al mes
+            </dt>
+            <dd class="tabular shrink-0 text-base font-semibold tracking-[-0.01em] text-ink" data-leak>{cop(leak)}</dd>
+          </div>
+          <div class="flex items-center gap-3 border-b border-line py-4">
+            <dt class="flex min-w-0 flex-1 items-center gap-3 text-sm text-body">
+              <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-ink">
+                <Icon name="rotate-ccw" class="size-4" />
+              </span>
+              Recuperable desde el primer mes
+            </dt>
+            <dd class="tabular shrink-0 text-base font-semibold tracking-[-0.01em] text-ink" data-recoverable>
+              {cop(recoverable)}
+            </dd>
+          </div>
+        </dl>
+
+        <div class="mt-5 flex flex-1 flex-col rounded-2xl border border-line bg-surface p-5 shadow-card">
+          <dl>
+            <dt class="flex items-center gap-2 text-sm text-body">
+              <Icon name="piggy-bank" class="size-4 shrink-0 text-brand-600" />
+              Ahorro proyectado en 12 meses
+            </dt>
+            <dd class="tabular mt-2 text-[2.5rem] leading-none font-semibold tracking-[-0.04em] text-ink" data-yearly>
+              {cop(yearly)}
+            </dd>
+          </dl>
+          <p class="mt-3 text-sm text-muted">Si mantienes el registro durante un año.</p>
+          <div class="mt-6 lg:mt-auto lg:pt-6">
+            <div class="h-1.5 rounded-full bg-line-soft" aria-hidden="true">
+              <div class="h-full w-[70%] rounded-full bg-brand-500"></div>
+            </div>
+            <p class="tabular mt-2.5 flex flex-wrap justify-between gap-x-3 gap-y-1 font-mono text-[11px] text-muted">
+              <span>Recuperas 70&nbsp;%</span>
+              <span>Fuga anual <span class="text-ink" data-annual-leak>{cop(leak * 12)}</span></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8 lg:flex-col lg:items-stretch lg:gap-5">
+          <p class="max-w-md text-xs leading-relaxed text-pretty text-muted">
+            Estimación ilustrativa: supone que el 20&nbsp;% del ingreso se va en gastos no registrados y que recuperas el
+            70&nbsp;% al registrarlos.
+          </p>
+          <Button href={waLink(WA_START_TEXT)} icon="whatsapp" class="w-full sm:w-auto lg:w-full">Empezar a ahorrar</Button>
+        </div>
+      </div>
+
+      <p class="sr-only" aria-live="polite" data-announce></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .calc-range {
+    --thumb: 22px;
+    height: 40px;
+    margin: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+  }
+
+  .calc-range:focus-visible {
+    border-radius: 9999px;
+    outline-offset: 4px;
+  }
+
+  .calc-range::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 9999px;
+    background: linear-gradient(
+      to right,
+      var(--color-brand-500, #10b981) calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--pct) / 100),
+      var(--color-line, #e4e4e7) 0
+    );
+  }
+
+  .calc-range::-moz-range-track {
+    height: 6px;
+    border-radius: 9999px;
+    background: linear-gradient(
+      to right,
+      var(--color-brand-500, #10b981) calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--pct) / 100),
+      var(--color-line, #e4e4e7) 0
+    );
+  }
+
+  .calc-range::-webkit-slider-thumb {
+    width: var(--thumb);
+    height: var(--thumb);
+    margin-top: calc((6px - var(--thumb)) / 2);
+    border: 1px solid var(--color-line, #e4e4e7);
+    border-radius: 9999px;
+    background: #fff;
+    box-shadow:
+      0 0 0 4px rgb(16 185 129 / 0.14),
+      var(--shadow-card, 0 1px 2px 0 rgb(10 10 11 / 0.06));
+    appearance: none;
+    -webkit-appearance: none;
+    transition: box-shadow 0.2s;
+  }
+
+  .calc-range::-moz-range-thumb {
+    width: var(--thumb);
+    height: var(--thumb);
+    box-sizing: border-box;
+    border: 1px solid var(--color-line, #e4e4e7);
+    border-radius: 9999px;
+    background: #fff;
+    box-shadow:
+      0 0 0 4px rgb(16 185 129 / 0.14),
+      var(--shadow-card, 0 1px 2px 0 rgb(10 10 11 / 0.06));
+    transition: box-shadow 0.2s;
+  }
+
+  .calc-range:hover::-webkit-slider-thumb,
+  .calc-range:active::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 6px rgb(16 185 129 / 0.2),
+      var(--shadow-card, 0 1px 2px 0 rgb(10 10 11 / 0.06));
+  }
+
+  .calc-range:hover::-moz-range-thumb,
+  .calc-range:active::-moz-range-thumb {
+    box-shadow:
+      0 0 0 6px rgb(16 185 129 / 0.2),
+      var(--shadow-card, 0 1px 2px 0 rgb(10 10 11 / 0.06));
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-calculator]');
+  const range = root?.querySelector<HTMLInputElement>('[data-range]');
+
+  if (root && range) {
+    const min = Number(root.dataset.min);
+    const max = Number(root.dataset.max);
+    const leakRate = Number(root.dataset.leakRate);
+    const recoveryRate = Number(root.dataset.recoveryRate);
+    const maxProjection = Number(root.dataset.maxProjection);
+
+    const income = root.querySelector<HTMLElement>('[data-income]');
+    const leak = root.querySelector<HTMLElement>('[data-leak]');
+    const recoverable = root.querySelector<HTMLElement>('[data-recoverable]');
+    const yearly = root.querySelector<HTMLElement>('[data-yearly]');
+    const annualLeak = root.querySelector<HTMLElement>('[data-annual-leak]');
+    const chart = root.querySelector<HTMLElement>('[data-chart]');
+    const announce = root.querySelector<HTMLElement>('[data-announce]');
+    const presets = root.querySelectorAll<HTMLButtonElement>('[data-preset]');
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const formatter = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
+    const cop = (n: number) => `$${formatter.format(n)}`;
+
+    // Count-up tween per element; restarts from the value currently shown.
+    const shown = new WeakMap<HTMLElement, number>();
+    const frames = new WeakMap<HTMLElement, number>();
+
+    const setNumber = (el: HTMLElement | null, target: number) => {
+      if (!el) return;
+      const from = shown.get(el) ?? target;
+      const pending = frames.get(el);
+      if (pending) cancelAnimationFrame(pending);
+
+      if (reduceMotion.matches || from === target) {
+        shown.set(el, target);
+        el.textContent = cop(target);
+        return;
+      }
+
+      const start = performance.now();
+      const duration = 320;
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const value = Math.round(from + (target - from) * eased);
+        shown.set(el, value);
+        el.textContent = cop(value);
+        if (t < 1) frames.set(el, requestAnimationFrame(tick));
+        else frames.delete(el);
+      };
+      frames.set(el, requestAnimationFrame(tick));
+    };
+
+    let announceTimer: number | undefined;
+
+    const update = () => {
+      const value = Number(range.value);
+      const monthlyLeak = Math.round(value * leakRate);
+      const monthlyRecoverable = Math.round(monthlyLeak * recoveryRate);
+      const projection = monthlyRecoverable * 12;
+
+      range.style.setProperty('--pct', String(((value - min) / (max - min)) * 100));
+      range.setAttribute('aria-valuetext', `${cop(value)} COP`);
+      if (income) income.textContent = cop(value);
+      chart?.style.setProperty('--fill', String(projection / maxProjection));
+
+      setNumber(leak, monthlyLeak);
+      setNumber(recoverable, monthlyRecoverable);
+      setNumber(yearly, projection);
+      setNumber(annualLeak, monthlyLeak * 12);
+
+      presets.forEach((button) => {
+        button.setAttribute('aria-pressed', String(Number(button.dataset.preset) === value));
+      });
+
+      window.clearTimeout(announceTimer);
+      announceTimer = window.setTimeout(() => {
+        if (announce) {
+          announce.textContent = `Fuga estimada: ${cop(monthlyLeak)} al mes. Ahorro proyectado en 12 meses: ${cop(projection)}.`;
+        }
+      }, 700);
+    };
+
+    [leak, recoverable, yearly, annualLeak].forEach((el) => {
+      if (el) shown.set(el, Number(el.textContent?.replace(/\D/g, '') || 0));
+    });
+
+    range.addEventListener('input', update);
+    presets.forEach((button) => {
+      button.addEventListener('click', () => {
+        range.value = button.dataset.preset ?? range.value;
+        update();
+      });
+    });
+  }
+</script>

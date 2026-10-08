@@ -1,0 +1,366 @@
+---
+/**
+ * Beneficios: bento grid of six feature cards. Each card pairs a short
+ * benefit with a small decorative product visual (aria-hidden); the
+ * meaning always lives in the card's own text.
+ *
+ * Grid in source order, no holes at any breakpoint:
+ *   sm → [capture ×2] [receipts correct] [reminders privacy] [summary ×2]
+ *   lg → [capture ×2 | receipts] [correct reminders | receipts] [privacy | summary ×2]
+ * Visual panels grow (flex-1) so neighbours in a row end on the same line.
+ */
+import Icon, { type IconName } from './ui/Icon.astro';
+import SectionHeader from './ui/SectionHeader.astro';
+
+type CardId = 'capture' | 'receipts' | 'correct' | 'reminders' | 'privacy' | 'summary';
+
+interface Card {
+  id: CardId;
+  icon: IconName;
+  title: string;
+  description: string;
+  class?: string;
+}
+
+const cards: Card[] = [
+  {
+    id: 'capture',
+    icon: 'sparkles',
+    title: 'Habla, fotografía o escribe',
+    description:
+      'Envía una nota de voz, la foto del recibo o un texto como «almuerzo 18k». Whisper, Gemini y DeepSeek sacan el monto, la categoría y el comercio por ti.',
+    class: 'sm:col-span-2',
+  },
+  {
+    id: 'receipts',
+    icon: 'receipt',
+    title: 'Lee tus recibos',
+    description: 'Tómale una foto a la factura y Gemini 2.5 Flash extrae el total, el comercio y cada artículo.',
+    class: 'lg:row-span-2',
+  },
+  {
+    id: 'correct',
+    icon: 'pencil',
+    title: 'Corrige conversando',
+    description: 'Si algo quedó mal, dilo como lo dirías en un chat: «no, eran 15 mil» o «borra el último gasto».',
+  },
+  {
+    id: 'reminders',
+    icon: 'bell',
+    title: 'Recordatorios que sí ayudan',
+    description: 'Un mensaje a las 2:00 p. m. y otro a las 8:00 p. m. para que ningún gasto hormiga se te escape.',
+  },
+  {
+    id: 'privacy',
+    icon: 'shield-check',
+    title: 'Privado por diseño',
+    description: 'Nunca te pedimos claves ni acceso a tu banco. Tú decides qué registrar y tus datos se guardan cifrados.',
+  },
+  {
+    id: 'summary',
+    icon: 'bar-chart',
+    title: 'Resumen diario a las 9:00 p. m.',
+    description: 'Cada noche recibes tus totales por categoría y cuánto te queda de la quincena, sin abrir otra app.',
+    class: 'sm:col-span-2',
+  },
+];
+
+/** Keeps times like «2:00 p. m.» on one line. */
+const nb = (text: string) => text.replace(/(\d) ([ap])\. m\./g, '$1\u00a0$2.\u00a0m.');
+const cop = (n: number) => `$${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(n)}`;
+
+const inputs: { icon: IconName; label: string; detail: string }[] = [
+  { icon: 'mic', label: 'Nota de voz', detail: '0:06' },
+  { icon: 'camera', label: 'Foto', detail: 'recibo.jpg' },
+  { icon: 'type', label: 'Texto', detail: 'almuerzo 18k' },
+];
+const wave = [40, 70, 100, 55, 85, 35, 65, 90, 45, 30];
+
+const receiptItems = [
+  { name: 'Leche entera 1 L', amount: 4900 },
+  { name: 'Pan tajado', amount: 6200 },
+  { name: 'Huevos x 12', amount: 13500 },
+  { name: 'Café molido 250 g', amount: 9800 },
+];
+const receiptTotal = receiptItems.reduce((sum, item) => sum + item.amount, 0);
+
+const reminders = [
+  { time: '2:00 p. m.', message: '¿Ya anotaste el almuerzo?' },
+  { time: '8:00 p. m.', message: '¿Algún gasto hormiga hoy?' },
+];
+
+const privacyRows: { icon: IconName; label: string; value: string; on: boolean }[] = [
+  { icon: 'lock', label: 'Claves bancarias', value: 'Nunca', on: false },
+  { icon: 'credit-card', label: 'Acceso a tu banco', value: 'Nunca', on: false },
+  { icon: 'database', label: 'Cifrado de datos', value: 'Activo', on: true },
+];
+
+const categories = [
+  { label: 'Alimentación', amount: 186000 },
+  { label: 'Mercado', amount: 142300 },
+  { label: 'Transporte', amount: 94300 },
+  { label: 'Servicios', amount: 65000 },
+];
+const maxCategory = Math.max(...categories.map((c) => c.amount));
+const budget = 1100000;
+const spent = categories.reduce((sum, c) => sum + c.amount, 0);
+const spentPct = Math.round((spent / budget) * 100);
+
+const panel = 'flex flex-1 flex-col rounded-xl border border-line bg-canvas';
+const label = 'font-mono text-[11px] tracking-wider text-muted uppercase';
+---
+
+<section id="beneficios" aria-labelledby="beneficios-title" class="section-y border-t border-line bg-surface">
+  <div class="container-page">
+    <SectionHeader
+      id="beneficios-title"
+      eyebrow="Beneficios"
+      title="Todo el control de tu dinero."
+      titleMuted="Sin salir del chat."
+      description="SmartSavings convierte tus mensajes en registros ordenados para que sepas a dónde se va tu quincena, sin formularios ni hojas de cálculo."
+    />
+
+    <div class="mt-12 grid grid-cols-1 gap-4 sm:mt-16 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        cards.map((card, i) => (
+          <article
+            class:list={['card flex flex-col p-6', card.class]}
+            data-reveal
+            style={`--reveal-delay: ${(i % 2) * 80}ms`}
+          >
+            <span class="inline-flex size-10 items-center justify-center rounded-xl border border-line bg-canvas text-ink">
+              <Icon name={card.icon} class="size-5" />
+            </span>
+            <h3 class="mt-5 text-base font-medium tracking-[-0.01em] text-ink">{nb(card.title)}</h3>
+            <p class="mt-2 max-w-md text-[15px] leading-relaxed text-pretty text-body">{nb(card.description)}</p>
+
+            <div class="flex flex-1 flex-col pt-8" aria-hidden="true">
+              {card.id === 'capture' && (
+                <div class:list={[panel, 'justify-center p-3 sm:p-4']}>
+                  <div class="grid grid-cols-1 items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1.15fr)]">
+                    <ul class="grid gap-2">
+                      {inputs.map((input) => (
+                        <li class="flex h-10 items-center gap-2.5 rounded-lg border border-line bg-surface px-3 shadow-card">
+                          <Icon name={input.icon} class="size-4 shrink-0 text-muted" />
+                          <span class="text-sm font-medium text-ink">{input.label}</span>
+                          <span class="ml-auto flex min-w-0 items-center gap-2">
+                            {input.icon === 'mic' && (
+                              <span class="flex h-3.5 items-center gap-[2px]">
+                                {wave.map((h) => (
+                                  <span class="w-[2px] rounded-full bg-zinc-300" style={`height: ${h}%`} />
+                                ))}
+                              </span>
+                            )}
+                            <span class="truncate font-mono text-[11px] text-muted">{input.detail}</span>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <span class="mx-auto flex size-8 items-center justify-center rounded-full border border-line bg-surface text-muted shadow-card">
+                      <Icon name="arrow-right" class="size-4 rotate-90 sm:rotate-0" />
+                    </span>
+
+                    <div class="rounded-lg border border-line bg-surface p-4 shadow-elevated">
+                      <div class="flex items-center justify-between gap-3">
+                        <span class="inline-flex items-center gap-1.5 font-mono text-[11px] tracking-wider text-brand-700 uppercase">
+                          <Icon name="check-circle" class="size-3.5 text-brand-600" />
+                          Registrado
+                        </span>
+                        <span class="shrink-0 font-mono text-[11px] whitespace-nowrap text-muted">Hoy, 1:24 p. m.</span>
+                      </div>
+                      <div class="mt-3 flex items-baseline justify-between gap-3">
+                        <span class="min-w-0 text-sm font-medium text-ink">Almuerzo corrientazo</span>
+                        <span class="tabular shrink-0 text-base font-semibold tracking-[-0.01em] text-ink">{cop(18000)}</span>
+                      </div>
+                      <dl class="mt-3 grid grid-cols-2 gap-3 border-t border-line-soft pt-3">
+                        <div>
+                          <dt class={label}>Categoría</dt>
+                          <dd class="mt-0.5 text-[13px] text-ink">Alimentación</dd>
+                        </div>
+                        <div>
+                          <dt class={label}>Pago</dt>
+                          <dd class="mt-0.5 text-[13px] text-ink">Efectivo</dd>
+                        </div>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {card.id === 'receipts' && (
+                <div
+                  class:list={[
+                    panel,
+                    'items-center justify-center gap-3 bg-[radial-gradient(var(--color-line)_1px,transparent_1px)] bg-[size:14px_14px] px-4 py-7',
+                  ]}
+                >
+                  <div class="relative w-full max-w-[15.5rem]">
+                    <span class="absolute -top-2 -left-2 size-3 rounded-tl-sm border-t-2 border-l-2 border-brand-500" />
+                    <span class="absolute -top-2 -right-2 size-3 rounded-tr-sm border-t-2 border-r-2 border-brand-500" />
+                    <span class="absolute -bottom-2 -left-2 size-3 rounded-bl-sm border-b-2 border-l-2 border-brand-500" />
+                    <span class="absolute -right-2 -bottom-2 size-3 rounded-br-sm border-r-2 border-b-2 border-brand-500" />
+                    <div class="rounded-md border border-line bg-surface p-4 font-mono text-[11px] leading-5 text-body shadow-card lg:text-xs lg:leading-6">
+                      <p class="text-center font-medium tracking-wider text-ink uppercase">Minimercado La Esquina</p>
+                      <p class="text-center whitespace-nowrap text-muted">Caja 02 · 6:42 p. m.</p>
+                      <ul class="mt-3 border-t border-dashed border-line pt-2">
+                        {receiptItems.map((item) => (
+                          <li class="flex justify-between gap-3">
+                            <span class="truncate">{item.name}</span>
+                            <span class="tabular text-ink">{cop(item.amount)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p class="-mx-1.5 mt-2 flex justify-between rounded bg-brand-50 px-1.5 py-0.5 font-medium text-brand-700 ring-1 ring-brand-200">
+                        <span class="tracking-wider uppercase">Total</span>
+                        <span class="tabular">{cop(receiptTotal)}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="mt-2 flex w-full max-w-[15.5rem] flex-col items-center gap-3 sm:hidden lg:flex">
+                    <span class="flex size-7 items-center justify-center rounded-full border border-line bg-surface text-muted shadow-card">
+                      <Icon name="arrow-right" class="size-3.5 rotate-90" />
+                    </span>
+                    <div class="w-full rounded-lg border border-line bg-surface p-3.5 shadow-elevated">
+                      <div class="flex items-center justify-between gap-3">
+                        <span class="inline-flex items-center gap-1.5 font-mono text-[11px] tracking-wider text-brand-700 uppercase">
+                          <Icon name="check-circle" class="size-3.5 text-brand-600" />
+                          Extraído
+                        </span>
+                        <span class="shrink-0 font-mono text-[11px] text-muted">Mercado</span>
+                      </div>
+                      <p class="mt-2.5 truncate text-sm font-medium text-ink">Minimercado La Esquina</p>
+                      <p class="mt-0.5 flex items-baseline justify-between gap-3">
+                        <span class="text-[13px] text-body">{receiptItems.length} artículos</span>
+                        <span class="tabular text-base font-semibold tracking-[-0.01em] text-ink">{cop(receiptTotal)}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {card.id === 'correct' && (
+                <div class:list={[panel, 'gap-2 p-3 text-[13px] sm:p-4']}>
+                  <span class="mx-auto mb-auto rounded-full bg-surface px-2 py-0.5 font-mono text-[11px] text-muted ring-1 ring-line">
+                    Hoy
+                  </span>
+                  <p class="mt-2 max-w-[88%] self-start rounded-2xl rounded-bl-md border border-line bg-surface px-3 py-2 text-body shadow-card">
+                    Registré almuerzo por <span class="tabular font-medium text-ink">{cop(18000)}</span>
+                  </p>
+                  <p class="max-w-[85%] self-end rounded-2xl rounded-br-md bg-zinc-200/70 px-3 py-2 text-ink">no, eran 15 mil</p>
+                  <div class="max-w-[92%] self-start rounded-2xl rounded-bl-md border border-line bg-surface px-3 py-2 shadow-card">
+                    <p class="flex items-center gap-1.5 text-ink">
+                      <Icon name="check-circle" class="size-3.5 shrink-0 text-brand-600" />
+                      <span>
+                        Listo, actualizado a <span class="tabular font-medium">{cop(15000)}</span>
+                      </span>
+                    </p>
+                    <p class="mt-1 flex items-center gap-1.5 pl-5 font-mono text-[11px] text-muted">
+                      <span class="tabular line-through decoration-zinc-400">{cop(18000)}</span>
+                      <Icon name="arrow-right" class="size-3" />
+                      <span class="tabular text-ink">{cop(15000)}</span>
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {card.id === 'reminders' && (
+                <div class:list={[panel, 'gap-2 p-3 sm:p-4']}>
+                  <span class="mx-auto mb-auto rounded-full bg-surface px-2 py-0.5 font-mono text-[11px] text-muted ring-1 ring-line">
+                    Hoy
+                  </span>
+                  <ul class="mt-2 space-y-2">
+                    {reminders.map((reminder) => (
+                      <li class="flex items-center gap-3 rounded-lg border border-line bg-surface p-2.5 shadow-card">
+                        <span class="flex size-8 shrink-0 items-center justify-center rounded-md bg-canvas text-ink ring-1 ring-line">
+                          <Icon name="clock" class="size-4" />
+                        </span>
+                        <span class="min-w-0 flex-1">
+                          <span class="flex items-center justify-between gap-2">
+                            <span class="text-[13px] font-medium text-ink">SmartSavings</span>
+                            <span class="tabular shrink-0 font-mono text-[11px] whitespace-nowrap text-muted">{reminder.time}</span>
+                          </span>
+                          <span class="block text-[13px] text-body">{reminder.message}</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {card.id === 'privacy' && (
+                <div class:list={[panel, 'px-3 sm:px-4']}>
+                  <p class:list={[label, 'mb-auto pt-3.5 pb-1']}>Permisos de tu cuenta</p>
+                  <ul class="divide-y divide-line-soft">
+                    {privacyRows.map((row) => (
+                      <li class="flex items-center gap-3 py-3">
+                        <Icon name={row.icon} class="size-4 shrink-0 text-muted" />
+                        <span class="min-w-0 flex-1 text-[13px] text-ink">{row.label}</span>
+                        <span
+                          class:list={[
+                            'inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-mono text-[11px]',
+                            row.on ? 'bg-brand-50 text-brand-700 ring-1 ring-brand-200' : 'bg-surface text-body ring-1 ring-line',
+                          ]}
+                        >
+                          <Icon name={row.on ? 'check' : 'x'} class="size-3" strokeWidth={2.25} />
+                          {row.value}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {card.id === 'summary' && (
+                <div class:list={[panel, 'justify-center p-4 sm:p-5']}>
+                  <div class="flex items-center justify-between gap-3">
+                    <span class={label}>Quincena actual</span>
+                    <span class="inline-flex shrink-0 items-center gap-1.5 font-mono text-[11px] whitespace-nowrap text-muted">
+                      <Icon name="moon" class="size-3.5" />
+                      9:00 p. m.
+                    </span>
+                  </div>
+                  <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] sm:gap-8">
+                    <ul class="space-y-3">
+                      {categories.map((category, index) => (
+                        <li>
+                          <div class="flex items-baseline justify-between gap-3 text-[13px]">
+                            <span class="text-body">{category.label}</span>
+                            <span class="tabular font-mono text-xs text-ink">{cop(category.amount)}</span>
+                          </div>
+                          <div class="mt-1.5 h-1.5 rounded-full bg-line-soft">
+                            <div
+                              class:list={['h-full rounded-full', index === 0 ? 'bg-brand-500' : 'bg-zinc-300']}
+                              style={`width: ${(category.amount / maxCategory) * 100}%`}
+                            />
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    <div class="flex flex-col justify-between rounded-lg border border-line bg-surface p-4 shadow-card">
+                      <div>
+                        <p class="text-[13px] text-body">Te quedan</p>
+                        <p class="tabular mt-1 text-2xl font-semibold tracking-[-0.02em] text-ink">{cop(budget - spent)}</p>
+                        <p class="text-[13px] text-body">de tu quincena</p>
+                      </div>
+                      <div class="mt-5">
+                        <div class="h-1.5 rounded-full bg-line-soft">
+                          <div class="h-full rounded-full bg-ink" style={`width: ${spentPct}%`} />
+                        </div>
+                        <p class="tabular mt-2 flex justify-between gap-2 font-mono text-[11px] text-muted">
+                          <span>Gastado {cop(spent)}</span>
+                          <span>{`${spentPct}\u00a0%`}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

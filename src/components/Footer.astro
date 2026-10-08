@@ -1,98 +1,160 @@
 ---
-// Footer.astro
+/**
+ * Footer: brand + WhatsApp contact, three link columns and a bottom bar.
+ * Also renders the mobile-only floating WhatsApp button, which appears
+ * after ~600px of scroll and steps aside over [data-wa-fab-hide] blocks.
+ */
+import Icon from './ui/Icon.astro';
+import Logo from './ui/Logo.astro';
+import { SITE, waLink, WA_START_TEXT } from '../lib/site';
+
+interface FooterColumn {
+  title: string;
+  links: { label: string; href: string }[];
+}
+
+const columns: FooterColumn[] = [
+  {
+    title: 'Producto',
+    links: [
+      { label: 'Beneficios', href: '#beneficios' },
+      { label: 'Cómo funciona', href: '#como-funciona' },
+      { label: 'Calculadora', href: '#calculadora' },
+      { label: 'Precios', href: '#precios' },
+    ],
+  },
+  {
+    title: 'Recursos',
+    links: [
+      { label: 'Comparativa', href: '#comparativa' },
+      { label: 'Preguntas frecuentes', href: '#preguntas' },
+    ],
+  },
+  {
+    title: 'Contacto',
+    links: [
+      { label: 'WhatsApp', href: waLink() },
+      { label: 'Unirme a la beta', href: waLink('Hola SmartSavings, quiero unirme a la beta') },
+    ],
+  },
+];
+
+const isExternal = (href: string) => /^https?:\/\//.test(href);
+const externalAttrs = { target: '_blank', rel: 'noopener noreferrer' };
 ---
 
-<footer class="bg-[#182C38] text-white pt-20 pb-12 border-t border-slate-700/60 relative overflow-hidden">
-  
-  <!-- Subtle background glow -->
-  <div class="pointer-events-none absolute -bottom-24 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-[radial-gradient(ellipse,rgba(107,165,200,0.15)_0%,transparent_70%)] blur-2xl"></div>
-
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-slate-700/60">
-      
-      <!-- Brand Col (Cols 1-5) -->
-      <div class="md:col-span-5 space-y-4">
-        <a href="#" class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-white/10 p-1 flex items-center justify-center border border-white/20">
-            <img src="/logo.svg" alt="SmartSavings Logo" class="w-full h-full object-contain" />
-          </div>
-          <span class="text-2xl font-black tracking-tight text-white">
-            Smart<span class="text-[#6BA5C8]">Savings</span>
-          </span>
+<footer class="border-t border-line bg-surface">
+  <div class="container-page pt-12 pb-24 sm:pt-16 lg:pb-16">
+    <div class="grid gap-10 md:grid-cols-12">
+      <div class="md:col-span-5">
+        <a href="#inicio" class="inline-flex rounded-lg">
+          <Logo />
         </a>
-
-        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-sm">
-          Tu asistente financiero inteligente en WhatsApp. Detén la fuga de dinero quincenal mediante registro casi sin fricción de voz, texto y recibos con IA.
+        <p class="mt-4 max-w-xs text-sm leading-relaxed text-pretty text-body">
+          Tu asistente de gastos en WhatsApp. Registra con un audio, una foto o un texto.
         </p>
-
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/40 text-[11px] font-semibold text-emerald-300">
-          <span class="w-2 h-2 rounded-full bg-[#2ECC71] animate-pulse"></span>
-          <span>Sistema Operativo en WhatsApp: +57 333 293 7647</span>
-        </div>
+        <a
+          href={waLink()}
+          class="mt-6 inline-flex h-10 items-center gap-2 rounded-full border border-line bg-surface px-4 text-sm font-medium text-ink shadow-card transition-colors hover:border-zinc-300 hover:bg-canvas"
+          {...externalAttrs}
+        >
+          <Icon name="whatsapp" class="size-4 text-brand-600" />
+          <span class="tabular">{SITE.whatsappDisplay}</span>
+        </a>
       </div>
 
-      <!-- Quick Links (Cols 6-8) -->
-      <div class="md:col-span-3 space-y-3">
-        <h4 class="text-xs font-black uppercase tracking-wider text-[#7FBDA3]">Navegación</h4>
-        <ul class="space-y-2 text-xs text-slate-300 font-medium">
-          <li><a href="#como-funciona" class="hover:text-white transition-colors">Cómo Funciona</a></li>
-          <li><a href="#ecosistema-3d" class="hover:text-white transition-colors">Ecosistema 3D</a></li>
-          <li><a href="#simulador" class="hover:text-white transition-colors">Simulador en Vivo</a></li>
-          <li><a href="#calculadora" class="hover:text-white transition-colors">Calculadora de Fuga</a></li>
-          <li><a href="#comparativa" class="hover:text-white transition-colors">Comparativa WhatsApp</a></li>
-          <li><a href="#precios" class="hover:text-white transition-colors">Precios Beta</a></li>
-          <li><a href="#faq" class="hover:text-white transition-colors">Preguntas Frecuentes</a></li>
-        </ul>
-      </div>
-
-      <!-- Tech & Security (Cols 9-12) -->
-      <div class="md:col-span-4 space-y-3">
-        <h4 class="text-xs font-black uppercase tracking-wider text-[#D4A574]">Seguridad & Stack</h4>
-        <p class="text-xs text-slate-300 leading-relaxed">
-          Infraestructura multi-agente construida sobre PostgreSQL en Supabase, orquestada con n8n y modelos de IA avanzados (Gemini 2.5 Flash, DeepSeek y Whisper). Cero claves bancarias compartidas.
-        </p>
-        <div class="pt-2">
-          <a 
-            href="https://wa.me/573332937647" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-bold text-xs shadow-md hover:opacity-90 transition-opacity"
-          >
-            <span>Iniciar Conversación Oficial</span>
-            <span>→</span>
-          </a>
-        </div>
-      </div>
-
+      <nav aria-label="Pie de página" class="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 md:col-span-7">
+        {
+          columns.map(({ title, links }) => (
+            <div>
+              <h2 class="font-mono text-xs font-medium tracking-wider text-muted uppercase">{title}</h2>
+              <ul class="mt-4 space-y-1">
+                {links.map(({ label, href }) => (
+                  <li>
+                    <a
+                      href={href}
+                      class="group inline-flex items-center gap-1 rounded-md py-1.5 text-sm text-body transition-colors hover:text-ink"
+                      {...(isExternal(href) ? externalAttrs : {})}
+                    >
+                      {label}
+                      {isExternal(href) && (
+                        <Icon
+                          name="arrow-up-right"
+                          class="size-3.5 text-subtle transition-colors group-hover:text-ink"
+                        />
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </nav>
     </div>
 
-    <!-- Bottom Copyright -->
-    <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-      <div>
-        © 2026 SmartSavings. Todos los derechos reservados.
-      </div>
-      <div class="flex items-center gap-6">
-        <a href="#" class="hover:text-white transition-colors">Privacidad de Datos</a>
-        <a href="#" class="hover:text-white transition-colors">Términos de Servicio</a>
-        <span class="text-[#7FBDA3]">Hecho con ❤️ para tu tranquilidad financiera</span>
-      </div>
+    <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 text-sm text-muted">
+      <p>© {SITE.year} SmartSavings. Todos los derechos reservados.</p>
+      <p>Hecho en Colombia</p>
     </div>
-
   </div>
 
-  <!-- Floating Sticky WhatsApp Button (Bottom Right) -->
-  <a 
-    href="https://wa.me/573332937647" 
-    target="_blank" 
-    rel="noopener noreferrer"
-    class="fixed bottom-6 right-6 z-50 group flex items-center gap-3 bg-[#25D366] text-white p-3.5 sm:px-5 sm:py-3.5 rounded-full shadow-2xl shadow-emerald-500/40 hover:bg-[#20ba59] hover:scale-105 active:scale-95 transition-all"
-    aria-label="Abrir WhatsApp con SmartSavings"
+  <a
+    href={waLink(WA_START_TEXT)}
+    aria-label="Escribir a SmartSavings por WhatsApp"
+    aria-hidden="true"
+    tabindex="-1"
+    data-wa-fab
+    data-visible="false"
+    class="fixed right-5 bottom-5 z-40 inline-flex size-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-float transition-[opacity,translate,background-color] duration-300 ease-out-soft hover:bg-brand-700 data-[visible=false]:pointer-events-none data-[visible=false]:translate-y-3 data-[visible=false]:opacity-0 motion-reduce:transition-none lg:hidden"
+    {...externalAttrs}
   >
-    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-    </svg>
-    <span class="hidden sm:inline font-bold text-xs">Chatear con el Bot</span>
+    <Icon name="whatsapp" class="size-7" />
   </a>
-
 </footer>
+
+<script>
+  const fab = document.querySelector<HTMLAnchorElement>('[data-wa-fab]');
+
+  if (fab) {
+    const THRESHOLD = 600;
+    const covering = new Set<Element>();
+    let visible = false;
+    let frame = 0;
+
+    const render = () => {
+      frame = 0;
+      const next = window.scrollY > THRESHOLD && covering.size === 0;
+      if (next === visible) return;
+      visible = next;
+      fab.dataset.visible = String(next);
+      if (next) {
+        fab.removeAttribute('tabindex');
+        fab.removeAttribute('aria-hidden');
+      } else {
+        fab.setAttribute('tabindex', '-1');
+        fab.setAttribute('aria-hidden', 'true');
+      }
+    };
+
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(render);
+    };
+
+    window.addEventListener('scroll', schedule, { passive: true });
+
+    const blockers = document.querySelectorAll('[data-wa-fab-hide]');
+    if (blockers.length && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) covering.add(entry.target);
+          else covering.delete(entry.target);
+        }
+        schedule();
+      });
+      blockers.forEach((el) => io.observe(el));
+    }
+
+    render();
+  }
+</script>
