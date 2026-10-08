@@ -2,7 +2,9 @@
 /**
  * Cómo funciona: three numbered step cards (ordered list). Each card ends
  * in a small decorative product visual (aria-hidden); the meaning lives in
- * the card text. On md+ chevron markers sit in the gaps between cards.
+ * the card text. On md+ each card is a 3-row subgrid of the list
+ * (header · text · visual), so the visual panels start on one line, and
+ * chevron markers sit in the gaps between cards.
  * Each visual panel is a size container, so secondary details (metadata,
  * waveform, "Editar") only appear when the card is wide enough.
  */
@@ -40,7 +42,7 @@ const steps: Step[] = [
     id: 'confirm',
     icon: 'check-circle',
     title: 'Confirma con un toque',
-    description: `Revisa el resumen, confírmalo y listo. Recibe cierres a las ${time('2:00')} y ${time('8:00')}, y tu balance a las ${time('9:00')}`,
+    description: `Revisa los datos y confírmalos. Recibes recordatorios a las ${time('2:00')} y ${time('8:00')}, y tu resumen del día a las ${time('9:00')}`,
   },
 ];
 
@@ -53,7 +55,7 @@ const wave = [45, 80, 100, 60, 90, 40, 70];
 
 const cop = (n: number) => `$${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(n)}`;
 
-const panel = '@container flex flex-1 flex-col justify-center rounded-xl border border-line-soft bg-canvas p-3 lg:p-4';
+const panel = '@container flex flex-1 flex-col justify-center rounded-xl border border-line bg-canvas p-3 lg:p-4';
 const row = 'flex h-9 items-center rounded-lg border bg-surface shadow-card';
 const micro = 'font-mono text-[11px] tracking-wider text-muted uppercase';
 ---
@@ -69,10 +71,14 @@ const micro = 'font-mono text-[11px] tracking-wider text-muted uppercase';
     />
 
     <div class="relative mt-12 sm:mt-16">
-      <ol role="list" class="grid gap-4 md:grid-cols-3 lg:gap-6">
+      <ol role="list" class="grid gap-4 md:grid-cols-3 md:gap-y-0 lg:gap-x-6">
         {
           steps.map((step, i) => (
-            <li class="card flex flex-col p-6 md:p-5 lg:p-6" data-reveal style={`--reveal-delay: ${i * 80}ms`}>
+            <li
+              class="card flex flex-col p-6 md:row-span-3 md:grid md:grid-rows-subgrid md:p-5 lg:p-6"
+              data-reveal
+              style={`--reveal-delay: ${i * 80}ms`}
+            >
               <div class="flex items-center justify-between">
                 <span class="inline-flex size-10 items-center justify-center rounded-xl border border-line bg-canvas text-ink">
                   <Icon name={step.icon} class="size-5" />
@@ -82,10 +88,12 @@ const micro = 'font-mono text-[11px] tracking-wider text-muted uppercase';
                   {String(i + 1).padStart(2, '0')}
                 </span>
               </div>
-              <h3 class="mt-5 text-base font-medium tracking-[-0.01em] text-ink">{step.title}</h3>
-              <p class="mt-2 text-[15px] leading-relaxed text-pretty text-body">{step.description}</p>
+              <div class="mt-5">
+                <h3 class="text-base font-medium tracking-[-0.01em] text-ink">{step.title}</h3>
+                <p class="mt-2 text-[15px] leading-relaxed text-pretty text-body">{step.description}</p>
+              </div>
 
-              <div class="mt-auto flex flex-1 flex-col pt-6" aria-hidden="true">
+              <div class="flex flex-1 flex-col pt-6" aria-hidden="true">
                 {step.id === 'start' && (
                   <div class:list={[panel, 'gap-2.5']}>
                     <div class:list={[row, 'gap-2 border-line px-2.5 @min-[12rem]:gap-2.5 @min-[12rem]:px-3']}>
@@ -165,7 +173,7 @@ const micro = 'font-mono text-[11px] tracking-wider text-muted uppercase';
         }
       </ol>
 
-      <div class="pointer-events-none absolute inset-x-0 top-[31px] hidden h-7 md:block" aria-hidden="true" data-reveal style="--reveal-delay: 240ms">
+      <div class="pointer-events-none absolute inset-x-0 top-[27px] hidden h-7 md:block lg:top-[31px]" aria-hidden="true" data-reveal style="--reveal-delay: 240ms">
         <span class="absolute top-0 left-[calc((100%_-_2rem)/3_+_0.5rem)] flex size-7 -translate-x-1/2 items-center justify-center rounded-full border border-line bg-surface text-muted shadow-card lg:left-[calc((100%_-_3rem)/3_+_0.75rem)]">
           <Icon name="chevron-right" class="size-3.5" />
         </span>

@@ -5,7 +5,7 @@ import Icon from './ui/Icon.astro';
 import WhatsAppDemo from './WhatsAppDemo.astro';
 import { waLink, WA_START_TEXT } from '../lib/site';
 
-const TRUST = ['Sin descargar apps', 'Sin claves bancarias', 'Gratis durante la beta'];
+const TRUST = ['Sin descargar apps', 'Sin claves bancarias', 'Beta gratis de por vida'];
 
 const STACK = [
   { name: 'WhatsApp', role: 'Canal' },
@@ -16,7 +16,7 @@ const STACK = [
 ];
 ---
 
-<section id="inicio" aria-labelledby="hero-title" class="relative overflow-hidden pt-28 pb-20 sm:pt-36 sm:pb-28">
+<section id="inicio" aria-labelledby="hero-title" class="relative overflow-hidden pt-28 pb-20 sm:pb-28">
   <div class="pointer-events-none absolute inset-x-0 top-0 h-[720px]" aria-hidden="true">
     <div class="absolute inset-0 bg-grid mask-radial-fade"></div>
     <div class="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_0%,var(--color-brand-100),transparent_70%)] opacity-40"></div>
@@ -28,10 +28,13 @@ const STACK = [
         href="#precios"
         class="group relative inline-flex items-center gap-2 rounded-full border border-line bg-surface py-1.5 pr-2.5 pl-3 text-sm text-body shadow-card transition-colors duration-200 after:absolute after:-inset-y-1 after:inset-x-0 hover:border-zinc-300 hover:text-ink motion-safe:animate-fade-up"
       >
-        <span class="size-1.5 shrink-0 rounded-full bg-brand-500 animate-pulse-dot" aria-hidden="true"></span>
+        <span
+          class="size-1.5 shrink-0 animate-pulse-dot rounded-full bg-brand-500 [animation-iteration-count:2]"
+          aria-hidden="true"
+        ></span>
         <span class="font-medium text-ink">Beta abierta</span>
         <span class="h-3.5 w-px bg-line" aria-hidden="true"></span>
-        <span>Gratis de por vida<span class="hidden sm:inline"> si entras ahora</span></span>
+        <span>Gratis de por vida<span class="hidden sm:inline"> si te unes ahora</span></span>
         <Icon
           name="chevron-right"
           class="size-4 text-muted transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-ink"
@@ -78,7 +81,7 @@ const STACK = [
       </ul>
     </div>
 
-    <div class="mt-14 motion-safe:animate-fade-up motion-safe:[animation-delay:320ms] sm:mt-20">
+    <div class="mt-14 motion-safe:animate-fade-up motion-safe:[animation-delay:320ms]">
       <WhatsAppDemo />
     </div>
 

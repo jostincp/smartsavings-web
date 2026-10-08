@@ -10,9 +10,9 @@ import Logo from './ui/Logo.astro';
 const uid = 'wa-demo';
 
 const tabs: { id: string; icon: IconName; title: string; short: string; example: string }[] = [
-  { id: 'voz', icon: 'mic', title: 'Nota de voz', short: 'Audio', example: 'Almorcé 18 mil con Nequi' },
+  { id: 'voz', icon: 'mic', title: 'Nota de voz', short: 'Audio', example: '«Almorcé 18 mil en el corrientazo, pagué con Nequi»' },
   { id: 'foto', icon: 'camera', title: 'Foto del recibo', short: 'Foto', example: 'Recibo de Tiendas D1' },
-  { id: 'texto', icon: 'type', title: 'Mensaje de texto', short: 'Texto', example: 'uber a la oficina 12.500' },
+  { id: 'texto', icon: 'type', title: 'Mensaje de texto', short: 'Texto', example: '«uber a la oficina 12.500»' },
 ];
 
 const steps: { n: number; icon: IconName; label: string }[] = [
@@ -59,8 +59,8 @@ const summary = [
 >
   <p id={`${uid}-desc`} class="sr-only">
     Simulación de un chat: envías un gasto como nota de voz, foto del recibo o texto; la IA extrae monto, categoría,
-    descripción, método de pago y fecha; y tú confirmas o corriges el registro. La demostración avanza sola y puedes
-    pausarla.
+    descripción, método de pago y fecha; y tú confirmas o corriges el registro.
+    <span class="block group-data-[static=true]/demo:hidden">La demostración avanza sola y puedes pausarla.</span>
   </p>
 
   <div class="relative overflow-hidden rounded-3xl border border-line bg-canvas">
@@ -100,7 +100,7 @@ const summary = [
                     <span class="hidden text-[15px] tracking-[-0.01em] text-body group-aria-selected/tab:text-ink xl:block">
                       {tab.title}
                     </span>
-                    <span class="mt-0.5 hidden truncate text-sm font-normal text-muted xl:block">«{tab.example}»</span>
+                    <span class="mt-0.5 hidden truncate text-sm font-normal text-muted xl:block">{tab.example}</span>
                   </span>
                   <span
                     aria-hidden="true"
@@ -135,7 +135,7 @@ const summary = [
             </button>
           </div>
         </div>
-        <p class="mt-5 hidden max-w-[17rem] gap-2 text-sm leading-relaxed text-muted xl:flex">
+        <p class="mt-5 hidden max-w-[17rem] gap-2 text-sm leading-relaxed text-muted xl:flex group-data-[static=true]/demo:hidden">
           <Icon name="info" class="mt-0.5 size-4 shrink-0" />
           <span>Toca <span class="font-medium text-ink">Confirmar</span> o <span class="font-medium text-ink">Editar</span> dentro del chat para probarlo tú.</span>
         </p>
@@ -187,14 +187,15 @@ const summary = [
               <Icon name="more-vertical" class="size-5 text-wa-header" />
             </div>
 
-            <div class="relative min-h-0 flex-1 overflow-hidden">
+            <!-- The log is top-anchored and pinned to the bottom with a translate, so new messages don't count as layout shifts. -->
+            <div class="relative min-h-0 flex-1 overflow-hidden [container-type:size]">
               <div
                 data-log
                 data-fading="false"
                 role="log"
                 aria-live="off"
                 aria-label="Conversación de ejemplo"
-                class="absolute inset-x-0 bottom-0 flex flex-col gap-1.5 px-3 pt-8 pb-3 transition-opacity duration-200 data-[fading=true]:opacity-0"
+                class="absolute inset-x-0 top-0 flex translate-y-[calc(100cqh_-_100%)] flex-col gap-1.5 px-3 pt-8 pb-3 transition-opacity duration-200 data-[fading=true]:pointer-events-none data-[fading=true]:opacity-0"
               >
                 <p class="mx-auto mb-1 rounded-md bg-white/90 px-2.5 py-0.5 text-[11px] font-medium text-wa-meta shadow-card">Ayer</p>
                 <div class="w-[86%] self-start rounded-lg rounded-tl-sm bg-wa-in px-2.5 py-2 text-[13px] leading-snug text-wa-text shadow-card">
@@ -320,7 +321,7 @@ const summary = [
                       </span>
                     )}
                   </dt>
-                  <dd class="flex min-w-0 justify-end text-right">
+                  <dd class="flex min-h-6.5 min-w-0 flex-1 items-center justify-end text-right">
                     <span
                       data-skel
                       class:list={[
@@ -364,7 +365,7 @@ const summary = [
               <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-line">
                 <div data-foot-bar class="h-full w-0 rounded-full bg-brand-500 transition-[width] duration-700 ease-out-soft"></div>
               </div>
-              <p data-foot-used class="mt-1.5 font-mono text-[11px] text-muted">50% usado de $1.600.000</p>
+              <p data-foot-used class="mt-1.5 font-mono text-[11px] text-muted">50&nbsp;% usado de $1.600.000</p>
             </div>
           </div>
         </div>
@@ -480,7 +481,7 @@ const summary = [
       <button
         type="button"
         data-action="confirm"
-        class="flex h-9 w-full items-center justify-center gap-1.5 border-t border-black/5 text-[13px] font-medium text-wa-header transition-colors duration-150 hover:bg-wa-panel data-[pressed=true]:bg-wa-panel disabled:cursor-default disabled:hover:bg-transparent data-[pressed=true]:disabled:hover:bg-wa-panel [&:disabled:not([data-pressed=true])]:text-wa-meta"
+        class="flex h-10 w-full items-center justify-center gap-1.5 border-t border-black/5 text-[13px] font-medium text-wa-header transition-colors duration-150 hover:bg-wa-panel data-[pressed=true]:bg-wa-panel aria-disabled:cursor-default aria-disabled:hover:bg-transparent data-[pressed=true]:aria-disabled:hover:bg-wa-panel [&[aria-disabled=true]:not([data-pressed=true])]:text-wa-meta"
       >
         <Icon name="check" class="size-4" strokeWidth={2.25} />
         Confirmar
@@ -488,7 +489,7 @@ const summary = [
       <button
         type="button"
         data-action="edit"
-        class="flex h-9 w-full items-center justify-center gap-1.5 border-t border-black/5 text-[13px] font-medium text-wa-header transition-colors duration-150 hover:bg-wa-panel data-[pressed=true]:bg-wa-panel disabled:cursor-default disabled:hover:bg-transparent data-[pressed=true]:disabled:hover:bg-wa-panel [&:disabled:not([data-pressed=true])]:text-wa-meta"
+        class="flex h-10 w-full items-center justify-center gap-1.5 border-t border-black/5 text-[13px] font-medium text-wa-header transition-colors duration-150 hover:bg-wa-panel data-[pressed=true]:bg-wa-panel aria-disabled:cursor-default aria-disabled:hover:bg-transparent data-[pressed=true]:aria-disabled:hover:bg-wa-panel [&[aria-disabled=true]:not([data-pressed=true])]:text-wa-meta"
       >
         <Icon name="pencil" class="size-3.5" strokeWidth={2} />
         Editar
@@ -569,7 +570,7 @@ const summary = [
       detail: 'Almuerzo corrientazo',
       method: 'Nequi',
       source: 'Nota de voz · Whisper',
-      message: '«Almorcé en el corrientazo, 18 mil, pagué con Nequi»',
+      message: '«Almorcé 18 mil en el corrientazo, pagué con Nequi»',
     },
     {
       id: 'foto',
@@ -669,10 +670,6 @@ const summary = [
     cancel(tag?: Tag): void {
       this.tasks = tag ? this.tasks.filter((t) => t.tag !== tag) : [];
       this.arm();
-    }
-
-    has(tag: Tag): boolean {
-      return this.tasks.some((t) => t.tag === tag);
     }
 
     private arm(): void {
@@ -778,12 +775,14 @@ const summary = [
     let edited = false;
     let typingNode: HTMLElement | null = null;
     let lastCard: HTMLElement | null = null;
-    let raf = 0;
-    const confirmed = new Map<Kind, number>();
+    let hovering = false;
+    let wasHeld = false;
+    let barAnim: Animation | null = null;
     let progress: { start: number; frac: number; end: number | null } = { start: 0, frac: 0, end: null };
 
     const scenario = () => SCENARIOS[current];
-    const available = () => START_AVAILABLE - Array.from(confirmed.values()).reduce((sum, n) => sum + n, 0);
+    // Every scenario is its own chat that opens on yesterday's $800.000 balance.
+    const available = () => START_AVAILABLE - amountNow;
     const usedPct = (avail: number) => Math.round(((BUDGET - avail) / BUDGET) * 100);
 
     // ---------- Progress bar on the active tab ----------
@@ -792,19 +791,24 @@ const summary = [
       const span = Math.max(1, progress.end - progress.start);
       return Math.min(1, progress.frac + (1 - progress.frac) * ((clock.now() - progress.start) / span));
     };
-    const setProgressEnd = (end: number | null) => {
-      progress = { start: clock.now(), frac: progressFrac(), end };
-    };
+    const bars = tabs.map((tab) => one('[data-progress]', tab));
+    /** Pins the bars at the current fill and, while running, lets the compositor fill the active one. */
     const drawProgress = () => {
+      barAnim?.cancel();
+      barAnim = null;
       const frac = progressFrac();
-      tabs.forEach((tab, i) => {
-        const bar = one('[data-progress]', tab);
+      bars.forEach((bar, i) => {
         if (bar) bar.style.transform = `scaleX(${i === current ? frac : 0})`;
       });
+      const bar = bars[current];
+      const left = progress.end === null ? 0 : progress.end - clock.now();
+      if (bar && clock.running && autoplay && left > 0 && typeof bar.animate === 'function') {
+        barAnim = bar.animate({ transform: [`scaleX(${frac})`, 'scaleX(1)'] }, { duration: left, easing: 'linear', fill: 'forwards' });
+      }
     };
-    const tick = () => {
+    const setProgressEnd = (end: number | null) => {
+      progress = { start: clock.now(), frac: progressFrac(), end };
       drawProgress();
-      raf = window.requestAnimationFrame(tick);
     };
 
     // ---------- Phone UI ----------
@@ -885,8 +889,12 @@ const summary = [
 
     const iconFor = (s: Scenario) => clone(`icon-${s.icon}`);
 
+    /** Retires the card buttons; the focused one stays focusable (aria-disabled) so keyboard focus isn't lost. */
     const disableCardButtons = () => {
-      all<HTMLButtonElement>('button[data-action]', log).forEach((b) => (b.disabled = true));
+      all<HTMLButtonElement>('button[data-action]', log).forEach((b) => {
+        b.setAttribute('aria-disabled', 'true');
+        b.disabled = b !== document.activeElement;
+      });
     };
 
     const appendCard = (s: Scenario, amount: number, corrected: boolean, animate: boolean) => {
@@ -898,6 +906,7 @@ const summary = [
       setText(node, '[data-amount]', money(amount));
       const tag = one('[data-corrected]', node);
       if (tag) tag.hidden = !corrected;
+      if (corrected) one('[data-action="edit"]', node)?.remove();
       setText(node, '[data-cat]', s.category);
       setText(node, '[data-detail-label]', s.detailLabel);
       setText(node, '[data-detail]', s.detail);
@@ -913,7 +922,7 @@ const summary = [
       if (!node) return;
       const avail = available();
       setText(node, '[data-avail]', money(avail));
-      setText(node, '[data-used]', `${usedPct(avail)}% usado`);
+      setText(node, '[data-used]', `${usedPct(avail)}\u00a0% usado`);
       setText(node, '[data-time]', s.time);
       const bar = one('[data-bar]', node);
       if (bar) bar.style.width = `${usedPct(avail)}%`;
@@ -973,7 +982,7 @@ const summary = [
       footer.dataset.state = saved ? 'saved' : 'pending';
       const avail = available();
       footAvail.textContent = money(avail);
-      footUsed.textContent = `${usedPct(avail)}% usado de ${money(BUDGET)}`;
+      footUsed.textContent = `${usedPct(avail)}\u00a0% usado de ${money(BUDGET)}`;
       footBar.style.width = saved ? `${usedPct(avail)}%` : '0%';
     };
 
@@ -1015,11 +1024,22 @@ const summary = [
       return startAt + text.length * T.char;
     };
 
+    /** Autoplay waits while the pointer or keyboard focus is on the phone. */
+    const held = () => hovering || screen.querySelector(':focus-visible') !== null;
+
+    /** Drops pending autoplay steps, including an auto-press of Confirmar that hasn't confirmed yet. */
+    const cancelAuto = () => {
+      clock.cancel('auto');
+      if (phase === 'awaiting') lastCard?.querySelector('[data-action="confirm"]')?.removeAttribute('data-pressed');
+    };
+
     /** Schedules the autoplay step for the current phase (auto-confirm or advance). */
     const scheduleAuto = (resumed = false) => {
       if (!autoplay || staticMode) return;
-      clock.cancel('auto');
-      if (phase === 'awaiting') {
+      cancelAuto();
+      if (held() || phase === 'editing' || phase === 'confirming') {
+        setProgressEnd(null);
+      } else if (phase === 'awaiting') {
         const wait = edited ? T.autoConfirmAfterEdit : T.autoConfirm;
         clock.after(wait, pressConfirm, 'auto');
         setProgressEnd(clock.now() + wait + T.press + T.saved + T.advance);
@@ -1027,8 +1047,6 @@ const summary = [
         const wait = resumed ? T.resumeAdvance : T.advance;
         clock.after(wait, () => play((current + 1) % SCENARIOS.length), 'auto');
         setProgressEnd(clock.now() + wait);
-      } else if (phase === 'editing' || phase === 'confirming') {
-        setProgressEnd(null);
       } else {
         setProgressEnd(scenarioStart + autoTotal(scenario()));
       }
@@ -1056,10 +1074,8 @@ const summary = [
       appendOutText('Confirmar');
       clock.after(450, showTyping);
       clock.after(T.saved, () => {
-        const s = scenario();
         hideTyping();
-        confirmed.set(s.id, amountNow);
-        appendSaved(s, true);
+        appendSaved(scenario(), true);
         setStatus('saved');
         setSteps(['done', 'done', 'done']);
         setFooter(true);
@@ -1070,7 +1086,7 @@ const summary = [
 
     const edit = () => {
       const s = scenario();
-      clock.cancel('auto');
+      cancelAuto();
       phase = 'editing';
       edited = true;
       setProgressEnd(null);
@@ -1146,16 +1162,10 @@ const summary = [
       clock.after(composeDuration(s), () => send(s));
     };
 
-    const resetCycleFor = (i: number) => {
-      if (i === 0) confirmed.clear();
-      confirmed.delete(SCENARIOS[i].id);
-    };
-
     const renderFinal = (i: number) => {
       clock.cancel();
       select(i);
       const s = scenario();
-      confirmed.clear();
       amountNow = s.amount;
       clearLog();
       log.dataset.fading = 'false';
@@ -1170,7 +1180,6 @@ const summary = [
       if (btn) btn.dataset.pressed = 'true';
       disableCardButtons();
       appendOutText('Confirmar', false);
-      confirmed.set(s.id, s.amount);
       appendSaved(s, false);
       setStatus('saved');
       setSteps(['done', 'done', 'done']);
@@ -1185,9 +1194,9 @@ const summary = [
       }
       clock.cancel();
       select(i);
-      resetCycleFor(i);
       const s = scenario();
       phase = 'compose';
+      disableCardButtons();
       edited = false;
       amountNow = s.amount;
       scenarioStart = clock.now();
@@ -1221,13 +1230,7 @@ const summary = [
       icoPlay.hidden = autoplay;
       pill.setAttribute('aria-live', autoplay ? 'off' : 'polite');
       tablist.setAttribute('aria-orientation', wide.matches ? 'vertical' : 'horizontal');
-      if (run && autoplay) {
-        if (!raf) raf = window.requestAnimationFrame(tick);
-      } else {
-        window.cancelAnimationFrame(raf);
-        raf = 0;
-        drawProgress();
-      }
+      drawProgress();
     };
 
     const activateTab = (i: number) => {
@@ -1256,7 +1259,7 @@ const summary = [
       if (autoplay) {
         autoplay = false;
         frozen = true;
-        clock.cancel('auto');
+        cancelAuto();
       } else {
         autoplay = true;
         frozen = false;
@@ -1270,12 +1273,28 @@ const summary = [
     log.addEventListener('click', (event) => {
       const target = event.target instanceof Element ? event.target : null;
       const btn = target?.closest<HTMLButtonElement>('button[data-action]');
-      if (!btn || btn.disabled || staticMode) return;
+      if (!btn || btn.getAttribute('aria-disabled') === 'true' || staticMode || phase !== 'awaiting') return;
       frozen = false;
       if (btn.dataset.action === 'edit') edit();
       else confirm();
       update();
     });
+
+    const syncHold = () => {
+      if (held() === wasHeld) return;
+      wasHeld = !wasHeld;
+      scheduleAuto(true);
+    };
+    screen.addEventListener('pointerenter', () => {
+      hovering = true;
+      syncHold();
+    });
+    screen.addEventListener('pointerleave', () => {
+      hovering = false;
+      syncHold();
+    });
+    screen.addEventListener('focusin', syncHold);
+    screen.addEventListener('focusout', syncHold);
 
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(

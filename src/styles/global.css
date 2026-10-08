@@ -240,3 +240,23 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ------------------------------------------------------------------
+   Print / "Guardar como PDF": show every reveal block, print the
+   navbar once (not on every page) and drop the floating WhatsApp button
+   ------------------------------------------------------------------ */
+@media print {
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  [data-navbar] {
+    position: absolute;
+  }
+
+  [data-wa-fab] {
+    display: none;
+  }
+}

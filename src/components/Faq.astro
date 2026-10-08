@@ -1,7 +1,9 @@
 ---
 /**
  * Preguntas frecuentes: sticky intro + contact card on the left, native
- * <details> accordion on the right. The same data feeds the FAQPage JSON-LD.
+ * <details> accordion on the right. Items open independently (no `name`
+ * group) so a tapped question never jumps when one above it closes.
+ * The same data feeds the FAQPage JSON-LD.
  */
 import Icon from './ui/Icon.astro';
 import Button from './ui/Button.astro';
@@ -59,7 +61,7 @@ const jsonLd = JSON.stringify({
 
 <section id="preguntas" aria-labelledby="preguntas-title" class="section-y bg-surface">
   <div class="container-page grid gap-12 lg:grid-cols-12">
-    <div class="contents lg:sticky lg:top-24 lg:col-span-4 lg:block lg:self-start">
+    <div class="contents lg:sticky lg:top-24 lg:col-span-5 lg:block lg:self-start xl:col-span-4">
       <SectionHeader
         id="preguntas-title"
         align="left"
@@ -82,7 +84,7 @@ const jsonLd = JSON.stringify({
         </div>
         <Button
           variant="secondary"
-          size="sm"
+          size="md"
           href={waLink('Hola SmartSavings, tengo una pregunta')}
           icon="whatsapp"
           class="mt-5 sm:mt-0 sm:ml-auto lg:mt-5 lg:ml-0"
@@ -92,10 +94,10 @@ const jsonLd = JSON.stringify({
       </div>
     </div>
 
-    <div class="divide-y divide-line border-y border-line lg:col-span-8 lg:self-start" data-reveal>
+    <div class="divide-y divide-line border-y border-line lg:col-span-7 lg:self-start xl:col-span-8" data-reveal>
       {
         faqs.map(({ question, answer }) => (
-          <details name="preguntas" class="group">
+          <details class="group">
             <summary class="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-base font-medium tracking-[-0.01em] text-ink select-none">
               <span class="text-pretty">{question}</span>
               <span class="inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-line text-body transition duration-300 ease-out-soft group-open:rotate-45 group-open:border-zinc-300 group-open:bg-canvas group-open:text-ink group-hover:border-zinc-300 group-hover:text-ink">

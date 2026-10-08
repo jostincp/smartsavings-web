@@ -1,7 +1,7 @@
 ---
 /**
  * Section heading block: mono eyebrow, two-tone title, optional lead.
- * `titleMuted` renders in a lighter tone after the main title.
+ * `titleMuted` renders in a lighter tone on its own line after the main title.
  */
 interface Props {
   eyebrow: string;
@@ -24,7 +24,7 @@ const centered = align === 'center';
   </p>
   <h2 id={id} class="mt-4 text-3xl font-semibold tracking-[-0.03em] text-balance text-ink sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
     {title}
-    {titleMuted && <span class="text-muted"> {titleMuted}</span>}
+    {titleMuted && <span class="block text-muted">{titleMuted}</span>}
   </h2>
-  {description && <p class="mt-4 text-base leading-relaxed text-pretty text-body sm:text-lg">{description}</p>}
+  {description && <p class:list={['mt-4 text-base leading-relaxed text-body sm:text-lg', centered ? 'text-balance' : 'text-pretty']}>{description}</p>}
 </div>

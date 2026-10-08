@@ -47,7 +47,7 @@ const externalAttrs = { target: '_blank', rel: 'noopener noreferrer' };
   <div class="container-page pt-12 pb-24 sm:pt-16 lg:pb-16">
     <div class="grid gap-10 md:grid-cols-12">
       <div class="md:col-span-5">
-        <a href="#inicio" class="inline-flex rounded-lg">
+        <a href="#inicio" class="-my-1.5 inline-flex rounded-lg py-1.5">
           <Logo />
         </a>
         <p class="mt-4 max-w-xs text-sm leading-relaxed text-pretty text-body">
@@ -68,12 +68,12 @@ const externalAttrs = { target: '_blank', rel: 'noopener noreferrer' };
           columns.map(({ title, links }) => (
             <div>
               <h2 class="font-mono text-xs font-medium tracking-wider text-muted uppercase">{title}</h2>
-              <ul class="mt-4 space-y-1">
+              <ul class="mt-3">
                 {links.map(({ label, href }) => (
                   <li>
                     <a
                       href={href}
-                      class="group inline-flex items-center gap-1 rounded-md py-1.5 text-sm text-body transition-colors hover:text-ink"
+                      class="group inline-flex min-h-10 items-center gap-1 rounded-md py-2 text-sm text-body transition-colors hover:text-ink"
                       {...(isExternal(href) ? externalAttrs : {})}
                     >
                       {label}
