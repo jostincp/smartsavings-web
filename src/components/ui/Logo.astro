@@ -1,0 +1,36 @@
+---
+/**
+ * SmartSavings logo: rounded-square mark (upward trend ending in the
+ * brand dot) + wordmark. `tone="light"` is for dark backgrounds.
+ */
+interface Props {
+  tone?: 'dark' | 'light';
+  showWordmark?: boolean;
+  class?: string;
+}
+
+const { tone = 'dark', showWordmark = true, class: className = '' } = Astro.props;
+const square = tone === 'dark' ? '#0a0a0b' : '#ffffff';
+const stroke = tone === 'dark' ? '#ffffff' : '#0a0a0b';
+---
+
+<span class:list={['inline-flex items-center gap-2.5', className]}>
+  <svg viewBox="0 0 32 32" class="size-7 shrink-0" aria-hidden="true">
+    <rect width="32" height="32" rx="8" fill={square}></rect>
+    <path
+      d="M8 21 13.5 15.5 17.5 19 23.5 12.5"
+      fill="none"
+      stroke={stroke}
+      stroke-width="2.6"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path>
+    <circle cx="23.5" cy="12.5" r="2.6" fill="#10b981"></circle>
+  </svg>
+  {
+    showWordmark && (
+      <span class:list={['text-[17px] font-semibold tracking-[-0.02em]', tone === 'dark' ? 'text-ink' : 'text-white']}>
+        SmartSavings
+      </span>
+    )
+  }
+</span>

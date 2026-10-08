@@ -1,48 +1,79 @@
 ---
+import '../styles/global.css';
+import { SITE } from '../lib/site';
+
 interface Props {
   title?: string;
   description?: string;
 }
 
-const { 
-  title = "SmartSavings 💰 | Tu Asistente Financiero Inteligente en WhatsApp",
-  description = "Detén la fuga de dinero quincenal. Registra gastos por voz, texto o foto de recibos directamente en WhatsApp con IA (DeepSeek, Gemini 2.5 Flash y Whisper)."
-} = Astro.props;
-
-import '../styles/global.css';
+const { title = `${SITE.name} — ${SITE.tagline}`, description = SITE.description } = Astro.props;
 ---
 
-<!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<!doctype html>
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="keywords" content="finanzas personales, control de gastos, WhatsApp bot, n8n, inteligencia artificial, ahorro, presupuesto, DeepSeek, Whisper, Gemini" />
-    <meta name="author" content="SmartSavings" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
 
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="/images/hero-reference.png" />
+    <meta property="og:image" content="/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="/og.png" />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content="/images/hero-reference.png" />
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body class="bg-[#F6FAFC] text-[#2C4A5E] antialiased selection:bg-[#7FBDA3]/30 selection:text-[#182C38]">
+  <body class="min-h-dvh bg-surface font-sans text-ink antialiased">
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-white"
+    >
+      Saltar al contenido
+    </a>
     <slot />
+
+    <script>
+      // Scroll reveal for elements marked with [data-reveal].
+      const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduce || !('IntersectionObserver' in window)) {
+        items.forEach((el) => el.classList.add('is-visible'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        items.forEach((el) => io.observe(el));
+      }
+    </script>
   </body>
 </html>

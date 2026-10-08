@@ -1,0 +1,30 @@
+---
+/**
+ * Section heading block: mono eyebrow, two-tone title, optional lead.
+ * `titleMuted` renders in a lighter tone after the main title.
+ */
+interface Props {
+  eyebrow: string;
+  title: string;
+  titleMuted?: string;
+  description?: string;
+  align?: 'center' | 'left';
+  id?: string;
+  class?: string;
+}
+
+const { eyebrow, title, titleMuted, description, align = 'center', id, class: className = '' } = Astro.props;
+const centered = align === 'center';
+---
+
+<div class:list={['max-w-2xl', centered ? 'mx-auto text-center' : '', className]} data-reveal>
+  <p class:list={['eyebrow', centered ? 'justify-center' : '']}>
+    <span class="size-1.5 rounded-full bg-brand-500" aria-hidden="true"></span>
+    {eyebrow}
+  </p>
+  <h2 id={id} class="mt-4 text-3xl font-semibold tracking-[-0.03em] text-balance text-ink sm:text-4xl lg:text-[2.75rem] lg:leading-[1.1]">
+    {title}
+    {titleMuted && <span class="text-muted"> {titleMuted}</span>}
+  </h2>
+  {description && <p class="mt-4 text-base leading-relaxed text-pretty text-body sm:text-lg">{description}</p>}
+</div>

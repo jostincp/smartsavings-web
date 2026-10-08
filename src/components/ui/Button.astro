@@ -1,0 +1,57 @@
+---
+/**
+ * Link-styled button used for every CTA on the page.
+ * External links (http…) automatically open in a new tab.
+ */
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'ghost' | 'inverted' | 'outline-inverted';
+  size?: 'sm' | 'md' | 'lg';
+  icon?: IconName;
+  iconRight?: IconName;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { href, variant = 'primary', size = 'md', icon, iconRight, class: className = '', ...rest } = Astro.props;
+
+const external = /^https?:\/\//.test(href);
+
+const variants = {
+  primary: 'bg-ink text-white shadow-card hover:bg-ink-soft',
+  secondary: 'bg-surface text-ink border border-line shadow-card hover:bg-canvas hover:border-zinc-300',
+  ghost: 'text-body hover:text-ink hover:bg-canvas',
+  inverted: 'bg-white text-ink hover:bg-zinc-100',
+  'outline-inverted': 'text-white border border-white/20 hover:bg-white/10',
+};
+
+const sizes = {
+  sm: 'h-9 px-4 text-sm gap-1.5',
+  md: 'h-11 px-5 text-[15px] gap-2',
+  lg: 'h-12 px-6 text-base gap-2',
+};
+
+const iconSize = size === 'sm' ? 'size-4' : 'size-[18px]';
+---
+
+<a
+  href={href}
+  class:list={[
+    'group inline-flex shrink-0 items-center justify-center rounded-full font-medium whitespace-nowrap transition-colors duration-200',
+    variants[variant],
+    sizes[size],
+    className,
+  ]}
+  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+  {...rest}
+>
+  {icon && <Icon name={icon} class={iconSize} />}
+  <slot />
+  {
+    iconRight && (
+      <Icon name={iconRight} class={`${iconSize} transition-transform duration-200 group-hover:translate-x-0.5`} />
+    )
+  }
+</a>

@@ -1,161 +1,242 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --brand-blue: #6BA5C8;
-    --brand-navy: #2C4A5E;
-    --brand-dark: #182C38;
-    --brand-green: #7FBDA3;
-    --brand-success: #2ECC71;
-    --brand-gold: #D4A574;
-    --brand-gold-light: #FBE5C8;
-    --brand-cream: #F5F9FA;
-    --brand-border: rgba(107, 165, 200, 0.18);
-  }
+/* ------------------------------------------------------------------
+   SmartSavings design tokens
+   Neutral, high-contrast base (zinc) + a single fintech accent (brand).
+   WhatsApp colors are reserved for the in-product mockup only.
+   ------------------------------------------------------------------ */
+@theme {
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
+  /* Neutrals */
+  --color-ink: #0a0a0b;
+  --color-ink-soft: #27272a;
+  --color-body: #52525b;
+  --color-muted: #71717a;
+  --color-subtle: #a1a1aa;
+  --color-line: #e4e4e7;
+  --color-line-soft: #f0f0f2;
+  --color-canvas: #fafafa;
+  --color-surface: #ffffff;
+
+  /* Brand accent (fintech green) */
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-300: #6ee7b7;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+  --color-brand-950: #022c22;
+
+  /* WhatsApp mockup palette (only inside the phone demo) */
+  --color-wa-header: #008069;
+  --color-wa-teal: #00a884;
+  --color-wa-green: #25d366;
+  --color-wa-bg: #efeae2;
+  --color-wa-out: #d9fdd3;
+  --color-wa-in: #ffffff;
+  --color-wa-text: #111b21;
+  --color-wa-meta: #667781;
+  --color-wa-panel: #f0f2f5;
+  --color-wa-tick: #53bdeb;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px 0 rgb(10 10 11 / 0.04), 0 1px 1px 0 rgb(10 10 11 / 0.02);
+  --shadow-elevated: 0 1px 2px 0 rgb(10 10 11 / 0.04), 0 16px 40px -16px rgb(10 10 11 / 0.16);
+  --shadow-float: 0 2px 4px 0 rgb(10 10 11 / 0.04), 0 24px 64px -20px rgb(10 10 11 / 0.28);
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-up: fade-up 0.5s var(--ease-out-soft) both;
+  --animate-pop-in: pop-in 0.35s var(--ease-out-soft) both;
+  --animate-wave: wave 1s ease-in-out infinite;
+  --animate-scan: scan 1.6s ease-in-out infinite;
+  --animate-typing: typing 1.2s ease-in-out infinite;
+  --animate-pulse-dot: pulse-dot 2s ease-out infinite;
+  --animate-caret: caret 1s steps(1) infinite;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateY(6px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.35); }
+    50% { transform: scaleY(1); }
+  }
+  @keyframes scan {
+    0% { top: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+  @keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-3px); opacity: 1; }
+  }
+  @keyframes pulse-dot {
+    0% { box-shadow: 0 0 0 0 rgb(16 185 129 / 0.45); }
+    70% { box-shadow: 0 0 0 6px rgb(16 185 129 / 0); }
+    100% { box-shadow: 0 0 0 0 rgb(16 185 129 / 0); }
+  }
+  @keyframes caret {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+}
+
+/* ------------------------------------------------------------------
+   Utilities shared across sections
+   ------------------------------------------------------------------ */
+
+/* Page container: 1152px max, consistent side gutters */
+@utility container-page {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+  @media (width >= 64rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Vertical rhythm for top-level sections */
+@utility section-y {
+  padding-block: 5rem;
+  @media (width >= 48rem) {
+    padding-block: 7rem;
+  }
+}
+
+/* Small mono label above headings */
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Base card surface */
+@utility card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-card);
+}
+
+/* Money & figures */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Hairline grid background, faded at the edges */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(10 10 11 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(10 10 11 / 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@utility bg-grid-dark {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@utility mask-radial-fade {
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
+}
+
+/* ------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------ */
+@layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
   }
 
   body {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #F6FAFC;
-    color: #2C4A5E;
-    overflow-x: hidden;
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-200);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+    border-radius: 0.375rem;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
   }
 }
 
-/* 3D Depth & Perspective */
-.perspective-1000 {
-  perspective: 1000px;
+/* ------------------------------------------------------------------
+   Scroll reveal (progressive enhancement: only hides when JS is on)
+   ------------------------------------------------------------------ */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.6s var(--ease-out-soft),
+    transform 0.6s var(--ease-out-soft);
+  transition-delay: var(--reveal-delay, 0ms);
 }
 
-.perspective-2000 {
-  perspective: 2000px;
+.js [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
 }
 
-.preserve-3d {
-  transform-style: preserve-3d;
-}
-
-/* Glassmorphism Classes */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 20px 40px -15px rgba(44, 74, 94, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.6) inset;
-}
-
-.glass-panel-dark {
-  background: rgba(24, 44, 56, 0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
-}
-
-.glass-pill {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(107, 165, 200, 0.25);
-}
-
-/* Subtle Glowing Dots Background Pattern */
-.bg-grid-dots {
-  background-image: radial-gradient(rgba(107, 165, 200, 0.18) 1.2px, transparent 1.2px);
-  background-size: 28px 28px;
-}
-
-.bg-radial-hero {
-  background: radial-gradient(circle at 75% 35%, rgba(212, 165, 116, 0.15) 0%, rgba(127, 189, 163, 0.12) 30%, rgba(246, 250, 252, 0) 70%);
-}
-
-/* 3D Floating Animations */
-@keyframes floatSlow {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
-  50% {
-    transform: translateY(-14px) rotate(1.2deg);
+
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
-}
 
-@keyframes floatReverse {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-  50% {
-    transform: translateY(12px) rotate(-1deg);
-  }
-}
-
-@keyframes coinBob {
-  0%, 100% {
-    transform: translateY(0px) rotateY(0deg) scale(1);
-  }
-  50% {
-    transform: translateY(-10px) rotateY(180deg) scale(1.05);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.85;
-    transform: scale(1.08);
-  }
-}
-
-@keyframes dashFlow {
-  to {
-    stroke-dashoffset: -40;
-  }
-}
-
-.animate-float-slow {
-  animation: floatSlow 7s ease-in-out infinite;
-}
-
-.animate-float-reverse {
-  animation: floatReverse 6s ease-in-out infinite;
-}
-
-.animate-coin-bob {
-  animation: coinBob 5s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 4s ease-in-out infinite;
-}
-
-.animate-dash-flow {
-  stroke-dasharray: 8 6;
-  animation: dashFlow 2s linear infinite;
-}
-
-/* 3D interactive card tilt transition */
-.card-3d-tilt {
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
-  will-change: transform;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-::-webkit-scrollbar-track {
-  background: #EDF3F7;
-}
-::-webkit-scrollbar-thumb {
-  background: #A6C4D7;
-  border-radius: 5px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #7DA6C0;
 }
