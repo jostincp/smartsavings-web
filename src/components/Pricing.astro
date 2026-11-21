@@ -7,7 +7,7 @@
 import Icon, { type IconName } from './ui/Icon.astro';
 import Button from './ui/Button.astro';
 import SectionHeader from './ui/SectionHeader.astro';
-import { waLink } from '../lib/site';
+import { EARLY_ACCESS_HREF, PRO_WAITLIST_HREF } from '../lib/site';
 
 interface Plan {
   id: 'beta' | 'pro';
@@ -34,16 +34,16 @@ const plans: Plan[] = [
     id: 'beta',
     featured: true,
     name: 'Beta',
-    badge: 'Disponible ahora',
+    badge: 'Acceso anticipado',
     description: 'Para cualquier persona que quiera ordenar sus gastos desde hoy.',
     price: '$0',
     unit: 'COP / mes',
     note: 'Gratis de por vida para usuarios beta',
     noteIcon: 'check-circle',
     cta: {
-      label: 'Unirme a la beta',
-      href: waLink('Hola SmartSavings, quiero unirme a la beta'),
-      icon: 'whatsapp',
+      label: 'Solicitar acceso anticipado',
+      href: EARLY_ACCESS_HREF,
+      icon: 'sparkles',
       variant: 'primary',
     },
     listLabel: 'Incluye:',
@@ -68,7 +68,7 @@ const plans: Plan[] = [
     noteIcon: 'tag',
     cta: {
       label: 'Avisarme del lanzamiento',
-      href: waLink('Hola SmartSavings, quiero que me avisen cuando salga el plan Pro'),
+      href: PRO_WAITLIST_HREF,
       icon: 'bell',
       variant: 'secondary',
     },

@@ -1,12 +1,16 @@
 ---
 /**
- * Footer: brand + WhatsApp contact, three link columns and a bottom bar.
- * Also renders the mobile-only floating WhatsApp button, which appears
+ * Footer: brand + SolutionsHub attribution + visible contact email,
+ * three link columns (Producto, Legal, Contacto) and a bottom bar.
+ * Also renders the mobile-only floating early-access button, which appears
  * after ~600px of scroll and steps aside over [data-wa-fab-hide] blocks.
  */
 import Icon from './ui/Icon.astro';
 import Logo from './ui/Logo.astro';
-import { SITE, waLink, WA_START_TEXT } from '../lib/site';
+import { SITE, mailLink, EARLY_ACCESS_HREF } from '../lib/site';
+
+const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
+const sectionHref = (hash: string) => (isHome ? hash : `/${hash}`);
 
 interface FooterColumn {
   title: string;
@@ -17,24 +21,26 @@ const columns: FooterColumn[] = [
   {
     title: 'Producto',
     links: [
-      { label: 'Beneficios', href: '#beneficios' },
-      { label: 'Cómo funciona', href: '#como-funciona' },
-      { label: 'Calculadora', href: '#calculadora' },
-      { label: 'Precios', href: '#precios' },
+      { label: 'Beneficios', href: sectionHref('#beneficios') },
+      { label: 'Cómo funciona', href: sectionHref('#como-funciona') },
+      { label: 'Calculadora', href: sectionHref('#calculadora') },
+      { label: 'Comparativa', href: sectionHref('#comparativa') },
+      { label: 'Precios', href: sectionHref('#precios') },
+      { label: 'Preguntas frecuentes', href: sectionHref('#preguntas') },
     ],
   },
   {
-    title: 'Recursos',
+    title: 'Legal',
     links: [
-      { label: 'Comparativa', href: '#comparativa' },
-      { label: 'Preguntas frecuentes', href: '#preguntas' },
+      { label: 'Política de Privacidad', href: '/privacidad' },
+      { label: 'Términos y Condiciones', href: '/terminos' },
     ],
   },
   {
     title: 'Contacto',
     links: [
-      { label: 'WhatsApp', href: waLink() },
-      { label: 'Unirme a la beta', href: waLink('Hola SmartSavings, quiero unirme a la beta') },
+      { label: 'Solicitar acceso anticipado', href: EARLY_ACCESS_HREF },
+      { label: SITE.email, href: mailLink() },
     ],
   },
 ];
@@ -47,19 +53,21 @@ const externalAttrs = { target: '_blank', rel: 'noopener noreferrer' };
   <div class="container-page pt-12 pb-24 sm:pt-16 lg:pb-16">
     <div class="grid gap-10 md:grid-cols-12">
       <div class="md:col-span-5">
-        <a href="#inicio" class="-my-1.5 inline-flex rounded-lg py-1.5">
+        <a href={sectionHref('#inicio')} class="-my-1.5 inline-flex rounded-lg py-1.5">
           <Logo />
         </a>
         <p class="mt-4 max-w-xs text-sm leading-relaxed text-pretty text-body">
           Tu asistente de gastos en WhatsApp. Registra con un audio, una foto o un texto.
         </p>
+        <p class="mt-2.5 text-sm font-medium text-ink">
+          SmartSavings es un producto de {SITE.company}.
+        </p>
         <a
-          href={waLink()}
-          class="mt-6 inline-flex h-10 items-center gap-2 rounded-full border border-line bg-surface px-4 text-sm font-medium text-ink shadow-card transition-colors hover:border-zinc-300 hover:bg-canvas"
-          {...externalAttrs}
+          href={mailLink()}
+          class="mt-5 inline-flex h-10 items-center gap-2 rounded-full border border-line bg-surface px-4 text-sm font-medium text-ink shadow-card transition-colors hover:border-zinc-300 hover:bg-canvas"
         >
-          <Icon name="whatsapp" class="size-4 text-brand-600" />
-          <span class="tabular">{SITE.whatsappDisplay}</span>
+          <Icon name="mail" class="size-4 text-brand-600" />
+          <span>{SITE.email}</span>
         </a>
       </div>
 
@@ -94,22 +102,25 @@ const externalAttrs = { target: '_blank', rel: 'noopener noreferrer' };
     </div>
 
     <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-6 text-sm text-muted">
-      <p>© {SITE.year} SmartSavings. Todos los derechos reservados.</p>
-      <p>Hecho en Colombia</p>
+      <p>© {SITE.year} SmartSavings · {SITE.company}. Todos los derechos reservados.</p>
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <a href="/privacidad" class="transition-colors hover:text-ink">Política de Privacidad</a>
+        <a href="/terminos" class="transition-colors hover:text-ink">Términos y Condiciones</a>
+        <span>Hecho en Colombia</span>
+      </div>
     </div>
   </div>
 
   <a
-    href={waLink(WA_START_TEXT)}
-    aria-label="Escribir a SmartSavings por WhatsApp"
+    href={EARLY_ACCESS_HREF}
+    aria-label="Solicitar acceso anticipado a SmartSavings"
     aria-hidden="true"
     tabindex="-1"
     data-wa-fab
     data-visible="false"
     class="fixed right-5 bottom-5 z-40 inline-flex size-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-float transition-[opacity,translate,background-color] duration-300 ease-out-soft hover:bg-brand-700 data-[visible=false]:pointer-events-none data-[visible=false]:translate-y-3 data-[visible=false]:opacity-0 motion-reduce:transition-none lg:hidden"
-    {...externalAttrs}
   >
-    <Icon name="whatsapp" class="size-7" />
+    <Icon name="mail" class="size-6" />
   </a>
 </footer>
 

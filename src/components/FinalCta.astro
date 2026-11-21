@@ -6,7 +6,7 @@
  */
 import Icon from './ui/Icon.astro';
 import Button from './ui/Button.astro';
-import { waLink, WA_START_TEXT } from '../lib/site';
+import { EARLY_ACCESS_HREF } from '../lib/site';
 
 const assurances = ['Beta gratis de por vida', 'Sin tarjeta de crédito', 'Sin descargas'];
 ---
@@ -32,7 +32,7 @@ const assurances = ['Beta gratis de por vida', 'Sin tarjeta de crédito', 'Sin d
 
       <p class="eyebrow justify-center text-zinc-400">
         <span class="size-1.5 rounded-full bg-brand-500" aria-hidden="true"></span>
-        Empieza hoy
+        Acceso anticipado
       </p>
       <h2
         id="cta-title"
@@ -41,12 +41,19 @@ const assurances = ['Beta gratis de por vida', 'Sin tarjeta de crédito', 'Sin d
         Detén la fuga de dinero de tu quincena.
       </h2>
       <p class="mx-auto mt-4 max-w-xl text-base leading-relaxed text-balance text-zinc-300 sm:text-lg">
-        Escribe a SmartSavings y registra tu primer gasto en menos de un minuto.
+        Solicita tu cupo en la beta de SmartSavings y empieza a registrar tus gastos en menos de un minuto.
       </p>
 
       <div class="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <Button variant="inverted" size="lg" href={waLink(WA_START_TEXT)} icon="whatsapp" class="w-full max-sm:px-5 max-sm:text-[15px] sm:w-auto">
-          Empezar gratis en WhatsApp
+        <Button
+          variant="inverted"
+          size="lg"
+          href={EARLY_ACCESS_HREF}
+          icon="sparkles"
+          iconRight="arrow-right"
+          class="w-full max-sm:px-5 max-sm:text-[15px] sm:w-auto"
+        >
+          Solicitar acceso anticipado
         </Button>
         <Button variant="outline-inverted" size="lg" href="#precios" class="w-full max-sm:text-[15px] sm:w-auto">Ver precios</Button>
       </div>

@@ -1,0 +1,183 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/ui/Icon.astro';
+import { SITE, mailLink } from '../lib/site';
+
+const lastUpdated = '21 de noviembre de 2026';
+const deletionHref = mailLink(
+  'Solicitud de eliminación de datos — SmartSavings',
+  'Hola equipo de SolutionsHub,\n\nSolicito la eliminación completa de mis datos personales y registros asociados a mi cuenta de SmartSavings.\n\nNúmero de WhatsApp o correo registrado: ',
+);
+---
+
+<Layout
+  title={`Política de Privacidad — ${SITE.name} (${SITE.company})`}
+  description={`Política de Privacidad y Tratamiento de Datos Personales de ${SITE.name}, un producto de ${SITE.company}.`}
+>
+  <Navbar />
+
+  <main id="contenido" class="bg-surface pt-28 pb-20 sm:pt-32 sm:pb-28">
+    <div class="container-page max-w-3xl">
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 rounded-full border border-line bg-canvas px-3.5 py-1.5 text-sm font-medium text-body transition-colors hover:border-zinc-300 hover:text-ink"
+      >
+        <Icon name="arrow-left" class="size-4" />
+        Volver al inicio
+      </a>
+
+      <header class="mt-8 border-b border-line pb-8">
+        <p class="eyebrow">
+          <span class="size-1.5 rounded-full bg-brand-500" aria-hidden="true"></span>
+          Documento legal
+        </p>
+        <h1 class="mt-3 text-3xl font-semibold tracking-[-0.03em] text-ink sm:text-4xl">
+          Política de Privacidad
+        </h1>
+        <p class="mt-3 text-base leading-relaxed text-body">
+          <strong>SmartSavings</strong> es un producto operado por <strong>{SITE.company}</strong>. Esta política describe cómo recolectamos, usamos, protegemos y eliminamos tus datos personales cuando visitas este sitio web o utilizas nuestro asistente financiero conversacional en WhatsApp.
+        </p>
+        <p class="mt-4 font-mono text-xs text-muted">
+          Última actualización: {lastUpdated} · Contacto: <a href={mailLink()} class="underline hover:text-ink">{SITE.email}</a>
+        </p>
+      </header>
+
+      <article class="mt-10 space-y-10 text-[15px] leading-relaxed text-body">
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">1. Responsable del tratamiento</h2>
+          <p>
+            El responsable del tratamiento de los datos personales recolectados a través de SmartSavings es <strong>{SITE.company}</strong>, con operaciones en la República de Colombia. Para cualquier consulta, petición, queja o reclamo relacionado con la privacidad y protección de datos, puedes escribirnos directamente a{' '}
+            <a href={mailLink()} class="font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink">
+              {SITE.email}
+            </a>.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">2. Datos que recolectamos</h2>
+          <p>
+            Solo recolectamos la información estrictamente necesaria para prestar el servicio de registro y seguimiento de finanzas personales:
+          </p>
+          <ul class="list-disc space-y-2 pl-5">
+            <li>
+              <strong>Datos de identificación y contacto:</strong> nombre de perfil visible en WhatsApp, número de teléfono / identificador de chat (<code>chat_id</code>) y correo electrónico cuando lo proporcionas para registro, vinculación de cuenta o solicitud de acceso anticipado.
+            </li>
+            <li>
+              <strong>Registros financieros ingresados voluntariamente:</strong> montos, moneda, tipo de movimiento (gasto o ingreso), categoría, descripción, comercio o producto detectado y fecha de la transacción.
+            </li>
+            <li>
+              <strong>Contenido multimedia enviado por el usuario:</strong> mensajes de texto, notas de voz y fotografías de recibos o facturas que envías voluntariamente al chat para ser procesadas y convertidas en registros estructurados.
+            </li>
+            <li>
+              <strong>Datos técnicos mínimos:</strong> zona horaria, moneda predeterminada y registros de error necesarios para garantizar la estabilidad y continuidad del servicio.
+            </li>
+          </ul>
+          <div class="mt-4 rounded-2xl border border-brand-200 bg-brand-50/70 p-4 text-sm text-ink">
+            <strong>Aclaración importante sobre datos bancarios:</strong> SmartSavings <strong>nunca</strong> solicita, recolecta, accede ni almacena contraseñas bancarias, claves dinámicas, códigos PIN, números de tarjeta de crédito/débito ni credenciales de acceso a entidades financieras.
+          </div>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">3. Finalidades del tratamiento</h2>
+          <p>Utilizamos tus datos exclusivamente para las siguientes finalidades:</p>
+          <ul class="list-disc space-y-2 pl-5">
+            <li>Crear y mantener tu perfil de usuario y asociar tu canal de mensajería.</li>
+            <li>Procesar tus mensajes de texto, transcribir notas de voz y extraer datos de recibos fotográficos mediante modelos de inteligencia artificial para registrar tus gastos e ingresos.</li>
+            <li>Generar consultas de balance, desgloses por categoría, correcciones conversacionales y resúmenes periódicos (incluyendo recordatorios diarios y reportes de cierre solicitados o habilitados por ti).</li>
+            <li>Gestionar solicitudes de acceso anticipado, soporte técnico y comunicaciones operativas del servicio.</li>
+            <li>Prevenir abusos, diagnosticar fallas técnicas y mejorar la precisión del servicio.</li>
+          </ul>
+          <p>
+            <strong>No vendemos, alquilamos ni comercializamos</strong> tus datos personales ni tu historial financiero con terceros, anunciantes ni corredores de datos.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">4. Proveedores tecnológicos y transferencia de datos</h2>
+          <p>
+            Para operar SmartSavings utilizamos proveedores de infraestructura y procesamiento tecnológico que actúan como encargados del tratamiento bajo estándares de seguridad de la industria:
+          </p>
+          <ul class="list-disc space-y-2 pl-5">
+            <li>
+              <strong>Meta Platforms, Inc. (WhatsApp Business Platform / Cloud API):</strong> canal de mensajería para recibir tus mensajes y enviarte respuestas, confirmaciones y recordatorios. El uso de WhatsApp también está sujeto a la Política de Privacidad de WhatsApp/Meta.
+            </li>
+            <li>
+              <strong>Supabase (PostgreSQL):</strong> almacenamiento seguro de perfiles de usuario, canales vinculados e historial de transacciones, con cifrado en tránsito (TLS) y en reposo.
+            </li>
+            <li>
+              <strong>Proveedores de Inteligencia Artificial (DeepSeek, Google Gemini y servicios de transcripción Whisper):</strong> se utilizan exclusivamente para clasificar intenciones, transcribir tus notas de voz y extraer montos, comercios e ítems de las fotografías de recibos que envías. El contenido multimedia enviado se procesa únicamente para extraer la transacción solicitada.
+            </li>
+            <li>
+              <strong>Infraestructura de automatización en la nube (n8n y servidores propios):</strong> orquestación segura de los flujos entre WhatsApp, los modelos de IA y la base de datos.
+            </li>
+          </ul>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">5. Seguridad de la información</h2>
+          <p>
+            Implementamos medidas técnicas, administrativas y organizativas razonables para proteger tu información contra acceso no autorizado, pérdida, alteración o divulgación, incluyendo comunicaciones cifradas mediante HTTPS/TLS, almacenamiento cifrado en PostgreSQL (Supabase), aislamiento de accesos y principio de mínimo privilegio.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">6. Conservación y eliminación de datos</h2>
+          <p>
+            Conservamos tus datos personales y tu historial de transacciones únicamente mientras mantengas activa tu cuenta o mientras sea necesario para prestarte el servicio y cumplir obligaciones legales aplicables.
+          </p>
+          <div id="eliminacion-de-datos" class="rounded-2xl border border-line bg-canvas p-5 space-y-2">
+            <h3 class="text-base font-semibold text-ink">Cómo solicitar la eliminación total de tus datos</h3>
+            <p class="text-sm text-body">
+              En cualquier momento puedes solicitar la eliminación definitiva e irreversible de tu perfil, número de teléfono, correo electrónico y todo tu historial de transacciones enviando un correo a{' '}
+              <a href={deletionHref} class="font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink">
+                {SITE.email}
+              </a>{' '}
+              con el asunto <em>«Solicitud de eliminación de datos — SmartSavings»</em>, indicando el número de WhatsApp o correo asociado a tu cuenta.
+            </p>
+            <p class="text-sm text-body">
+              Confirmaremos la recepción de tu solicitud y completaremos la eliminación definitiva en un plazo máximo de <strong>15 días hábiles</strong> (generalmente en menos de 72 horas).
+            </p>
+          </div>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">7. Derechos de los titulares (Habeas Data)</h2>
+          <p>
+            De conformidad con la Ley 1581 de 2012 y el Decreto 1377 de 2013 de Colombia (y estándares internacionales equivalentes de protección de datos), tienes derecho a:
+          </p>
+          <ul class="list-disc space-y-2 pl-5">
+            <li>Conocer, actualizar y rectificar tus datos personales y registros almacenados.</li>
+            <li>Solicitar prueba de la autorización otorgada para el tratamiento.</li>
+            <li>Ser informado sobre el uso que se le ha dado a tus datos.</li>
+            <li>Revocar la autorización y/o solicitar la supresión total de tus datos y dejar de recibir recordatorios automáticos en cualquier momento.</li>
+            <li>Acceder de forma gratuita a tus datos personales objeto de tratamiento.</li>
+          </ul>
+          <p>
+            Para ejercer cualquiera de estos derechos, escríbenos a{' '}
+            <a href={mailLink('Ejercicio de derechos de datos — SmartSavings')} class="font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink">
+              {SITE.email}
+            </a>.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">8. Menores de edad</h2>
+          <p>
+            SmartSavings está dirigido exclusivamente a personas mayores de 18 años. No recolectamos deliberadamente datos personales de menores de edad. Si detectas que un menor ha proporcionado información sin autorización legal, contáctanos en <a href={mailLink()} class="font-medium text-ink underline">{SITE.email}</a> para eliminarla de inmediato.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">9. Cambios a esta política</h2>
+          <p>
+            {SITE.company} podrá actualizar esta Política de Privacidad para reflejar mejoras técnicas, nuevas funcionalidades o requisitos normativos. Publicaremos cualquier actualización en esta misma página indicando la fecha de última revisión.
+          </p>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

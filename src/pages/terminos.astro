@@ -1,0 +1,141 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/ui/Icon.astro';
+import { SITE, mailLink } from '../lib/site';
+
+const lastUpdated = '21 de noviembre de 2026';
+---
+
+<Layout
+  title={`Términos y Condiciones — ${SITE.name} (${SITE.company})`}
+  description={`Términos y Condiciones de uso de ${SITE.name}, un producto de ${SITE.company}.`}
+>
+  <Navbar />
+
+  <main id="contenido" class="bg-surface pt-28 pb-20 sm:pt-32 sm:pb-28">
+    <div class="container-page max-w-3xl">
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 rounded-full border border-line bg-canvas px-3.5 py-1.5 text-sm font-medium text-body transition-colors hover:border-zinc-300 hover:text-ink"
+      >
+        <Icon name="arrow-left" class="size-4" />
+        Volver al inicio
+      </a>
+
+      <header class="mt-8 border-b border-line pb-8">
+        <p class="eyebrow">
+          <span class="size-1.5 rounded-full bg-brand-500" aria-hidden="true"></span>
+          Documento legal
+        </p>
+        <h1 class="mt-3 text-3xl font-semibold tracking-[-0.03em] text-ink sm:text-4xl">
+          Términos y Condiciones
+        </h1>
+        <p class="mt-3 text-base leading-relaxed text-body">
+          Estos Términos y Condiciones regulan el acceso y uso del sitio web y del asistente conversacional <strong>SmartSavings</strong>, un producto desarrollado y operado por <strong>{SITE.company}</strong>. Al acceder al sitio o utilizar el servicio, aceptas estos términos.
+        </p>
+        <p class="mt-4 font-mono text-xs text-muted">
+          Última actualización: {lastUpdated} · Contacto: <a href={mailLink()} class="underline hover:text-ink">{SITE.email}</a>
+        </p>
+      </header>
+
+      <article class="mt-10 space-y-10 text-[15px] leading-relaxed text-body">
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">1. Identificación y objeto del servicio</h2>
+          <p>
+            <strong>SmartSavings</strong> es un producto de <strong>{SITE.company}</strong> diseñado como un asistente conversacional de organización de finanzas personales a través de WhatsApp. Permite a los usuarios registrar gastos e ingresos mediante mensajes de texto, notas de voz o fotografías de recibos, categorizarlos automáticamente mediante inteligencia artificial y recibir recordatorios y resúmenes periódicos.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">2. Naturaleza informativa — No asesoría financiera</h2>
+          <p>
+            SmartSavings es únicamente una herramienta tecnológica de registro y visualización personal. <strong>{SITE.company} no es una entidad financiera, banco, cooperativa ni firma de asesoría financiera, contable o tributaria.</strong>
+          </p>
+          <p>
+            Los cálculos, balances, resúmenes diarios y estimaciones mostradas (incluida la calculadora ilustrativa de la página web) dependen exclusivamente de la información ingresada por el usuario y tienen carácter meramente informativo. Las decisiones financieras que tomes son de tu exclusiva responsabilidad.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">3. Acceso anticipado, fase Beta y precios</h2>
+          <ul class="list-disc space-y-2 pl-5">
+            <li>
+              <strong>Acceso anticipado / Beta:</strong> Actualmente el acceso se habilita de forma progresiva mediante solicitud a través de{' '}
+              <a href={mailLink()} class="font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink">
+                {SITE.email}
+              </a>. Los usuarios admitidos durante la fase Beta conservan el plan Beta gratuito ($0 COP/mes) sobre las funcionalidades vigentes del plan Beta.
+            </li>
+            <li>
+              <strong>Planes futuros (Plan Pro):</strong> {SITE.company} podrá lanzar planes pagos opcionales con funcionalidades avanzadas (como multimoneda, alertas de precios, exportación avanzada o cuentas compartidas). Nunca se realizarán cobros automáticos ni sin consentimiento previo y expreso del usuario.
+            </li>
+            <li>
+              <strong>Evolución continua:</strong> Al tratarse de un servicio en mejora continua, {SITE.company} puede actualizar, optimizar o modificar funcionalidades para garantizar estabilidad y calidad.
+            </li>
+          </ul>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">4. Uso de Inteligencia Artificial y validación del usuario</h2>
+          <p>
+            SmartSavings utiliza modelos de inteligencia artificial para transcribir notas de voz, leer recibos fotográficos y clasificar montos y categorías. Aunque buscamos la mayor precisión posible, los sistemas automatizados pueden cometer errores de interpretación (por ejemplo, por audio con ruido o recibos borrosos).
+          </p>
+          <p>
+            Es responsabilidad del usuario verificar los datos extraídos y utilizar las opciones de confirmación, corrección conversacional o eliminación cuando detecte alguna inexactitud.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">5. Uso aceptable y obligaciones del usuario</h2>
+          <p>Al utilizar SmartSavings, te comprometes a:</p>
+          <ul class="list-disc space-y-2 pl-5">
+            <li>Ser mayor de 18 años y utilizar un número telefónico y correo electrónico propios.</li>
+            <li><strong>No enviar credenciales bancarias confidenciales</strong> (contraseñas, claves dinámicas, números completos de tarjetas, códigos CVV ni documentos de identidad innecesarios) a través del chat.</li>
+            <li>Utilizar el servicio únicamente para fines personales y lícitos, respetando también los Términos de Servicio de WhatsApp / Meta.</li>
+            <li>No realizar envíos masivos automatizados (spam), ingeniería inversa ni intentos de sobrecargar o vulnerar la infraestructura del servicio.</li>
+          </ul>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">6. Propiedad intelectual</h2>
+          <p>
+            Todos los derechos de propiedad intelectual sobre la marca SmartSavings, el diseño, el código fuente, los flujos de automatización, la interfaz y los contenidos del sitio web pertenecen a <strong>{SITE.company}</strong>. Los registros financieros personales que ingreses siguen siendo de tu propiedad.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">7. Disponibilidad y limitación de responsabilidad</h2>
+          <p>
+            SmartSavings se ofrece «tal cual» y «según disponibilidad». Dado que el servicio depende de infraestructura de terceros (como WhatsApp Business Cloud API, proveedores de nube y APIs de inteligencia artificial), {SITE.company} no garantiza disponibilidad ininterrumpida al 100 % ni se hace responsable por interrupciones ajenas a su control, pérdida de conectividad o daños indirectos derivados del uso o imposibilidad de uso del servicio.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">8. Privacidad y cancelación</h2>
+          <p>
+            El tratamiento de tus datos personales se rige por nuestra{' '}
+            <a href="/privacidad" class="font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink">
+              Política de Privacidad
+            </a>. Puedes dejar de usar el servicio, desactivar recordatorios o solicitar la eliminación completa de tu cuenta y datos en cualquier momento escribiendo a{' '}
+            <a href={mailLink()} class="font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink">
+              {SITE.email}
+            </a>.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold tracking-[-0.02em] text-ink">9. Ley aplicable y contacto</h2>
+          <p>
+            Estos Términos y Condiciones se rigen por las leyes de la República de Colombia. Para dudas, soporte o comunicaciones formales relacionadas con SmartSavings, contáctanos en{' '}
+            <a href={mailLink()} class="font-medium text-ink underline decoration-line underline-offset-4 hover:decoration-ink">
+              {SITE.email}
+            </a>.
+          </p>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

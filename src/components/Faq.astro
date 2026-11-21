@@ -8,7 +8,7 @@
 import Icon from './ui/Icon.astro';
 import Button from './ui/Button.astro';
 import SectionHeader from './ui/SectionHeader.astro';
-import { waLink } from '../lib/site';
+import { SITE, QUESTION_HREF } from '../lib/site';
 
 interface Faq {
   question: string;
@@ -80,13 +80,15 @@ const jsonLd = JSON.stringify({
         </span>
         <div class="mt-4 sm:mt-0 lg:mt-4">
           <h3 class="text-base font-medium tracking-[-0.01em] text-ink">¿Tienes otra pregunta?</h3>
-          <p class="mt-1.5 text-[15px] leading-relaxed text-body">Escríbenos por WhatsApp y te ayudamos a resolverla.</p>
+          <p class="mt-1.5 text-[15px] leading-relaxed text-body">
+            Escríbenos a <span class="font-medium text-ink">{SITE.email}</span> y te ayudamos a resolverla.
+          </p>
         </div>
         <Button
           variant="secondary"
           size="md"
-          href={waLink('Hola SmartSavings, tengo una pregunta')}
-          icon="whatsapp"
+          href={QUESTION_HREF}
+          icon="mail"
           class="mt-5 sm:mt-0 sm:ml-auto lg:mt-5 lg:ml-0"
         >
           Escríbenos

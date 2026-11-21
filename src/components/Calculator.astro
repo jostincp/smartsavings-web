@@ -9,7 +9,7 @@
 import Icon from './ui/Icon.astro';
 import Button from './ui/Button.astro';
 import SectionHeader from './ui/SectionHeader.astro';
-import { waLink, WA_START_TEXT } from '../lib/site';
+import { EARLY_ACCESS_HREF } from '../lib/site';
 
 const MIN = 1_500_000;
 const MAX = 12_000_000;
@@ -204,7 +204,9 @@ const microLabel = 'font-mono text-[11px] tracking-wider text-muted uppercase';
             Estimación ilustrativa: supone que el 20&nbsp;% del ingreso se va en gastos no registrados y que recuperas el
             70&nbsp;% al registrarlos.
           </p>
-          <Button href={waLink(WA_START_TEXT)} icon="whatsapp" class="w-full sm:w-auto lg:w-full">Empezar a ahorrar</Button>
+          <Button href={EARLY_ACCESS_HREF} icon="sparkles" iconRight="arrow-right" class="w-full sm:w-auto lg:w-full">
+            Solicitar acceso anticipado
+          </Button>
         </div>
       </div>
 

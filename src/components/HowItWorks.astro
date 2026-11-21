@@ -11,7 +11,7 @@
 import Icon, { type IconName } from './ui/Icon.astro';
 import Button from './ui/Button.astro';
 import SectionHeader from './ui/SectionHeader.astro';
-import { SITE, waLink, WA_START_TEXT } from '../lib/site';
+import { EARLY_ACCESS_HREF } from '../lib/site';
 
 type StepId = 'start' | 'send' | 'confirm';
 
@@ -29,8 +29,8 @@ const steps: Step[] = [
   {
     id: 'start',
     icon: 'message-circle',
-    title: 'Escribe a SmartSavings',
-    description: 'Abre el chat desde esta página y envía un saludo. Tu perfil se crea al instante con tu número.',
+    title: 'Activa tu acceso',
+    description: 'Solicita tu cupo beta y abre el chat de WhatsApp. Tu perfil se crea al instante sin formularios.',
   },
   {
     id: 'send',
@@ -99,7 +99,7 @@ const micro = 'font-mono text-[11px] tracking-wider text-muted uppercase';
                     <div class:list={[row, 'gap-2 border-line px-2.5 @min-[12rem]:gap-2.5 @min-[12rem]:px-3']}>
                       <Icon name="whatsapp" class="size-4 shrink-0 text-brand-600" />
                       <span class="truncate font-mono text-[11px] tracking-tight text-body @min-[13rem]:text-[12px] @min-[13rem]:tracking-normal">
-                        wa.me/{SITE.whatsappNumber}
+                        SmartSavings · WhatsApp
                       </span>
                       <Icon name="arrow-up-right" class="ml-auto hidden size-3.5 shrink-0 text-muted @min-[14rem]:block" />
                     </div>
@@ -184,7 +184,7 @@ const micro = 'font-mono text-[11px] tracking-wider text-muted uppercase';
     </div>
 
     <div class="mt-12 flex flex-col items-center gap-3 sm:mt-14 sm:flex-row sm:justify-center sm:gap-5" data-reveal>
-      <Button href={waLink(WA_START_TEXT)} icon="whatsapp">Probar ahora en WhatsApp</Button>
+      <Button href={EARLY_ACCESS_HREF} icon="sparkles" iconRight="arrow-right">Quiero acceso anticipado</Button>
       <p class="inline-flex items-center gap-1.5 text-sm text-muted">
         <Icon name="clock" class="size-4" />
         Toma menos de un minuto.

@@ -3,7 +3,7 @@
 import Button from './ui/Button.astro';
 import Icon from './ui/Icon.astro';
 import WhatsAppDemo from './WhatsAppDemo.astro';
-import { waLink, WA_START_TEXT } from '../lib/site';
+import { EARLY_ACCESS_HREF } from '../lib/site';
 
 const TRUST = ['Sin descargar apps', 'Sin claves bancarias', 'Beta gratis de por vida'];
 
@@ -59,8 +59,8 @@ const STACK = [
       <div
         class="mt-9 flex w-full flex-col gap-3 motion-safe:animate-fade-up motion-safe:[animation-delay:180ms] sm:w-auto sm:flex-row sm:justify-center"
       >
-        <Button href={waLink(WA_START_TEXT)} icon="whatsapp" size="lg" class="w-full sm:w-auto">
-          Empezar gratis en WhatsApp
+        <Button href={EARLY_ACCESS_HREF} icon="sparkles" iconRight="arrow-right" size="lg" class="w-full sm:w-auto">
+          Solicitar acceso anticipado
         </Button>
         <Button href="#como-funciona" variant="secondary" size="lg" iconRight="arrow-right" class="w-full sm:w-auto">
           Ver cómo funciona
