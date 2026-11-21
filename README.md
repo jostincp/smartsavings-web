@@ -1,43 +1,56 @@
-# Astro Starter Kit: Minimal
+# SmartSavings — Landing
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Landing page de SmartSavings, el asistente de finanzas personales en WhatsApp.
+Construida con **Astro 6** y **Tailwind CSS v4**, con salida estática.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Comandos
 
-## 🚀 Project Structure
+| Comando           | Acción                                          |
+| :---------------- | :---------------------------------------------- |
+| `npm install`     | Instala las dependencias                        |
+| `npm run dev`     | Servidor local en `http://localhost:4321`       |
+| `npm run build`   | Genera el sitio de producción en `./dist/`      |
+| `npm run preview` | Sirve el build de producción localmente         |
 
-Inside of your Astro project, you'll see the following folders and files:
+Requiere Node.js 22.12 o superior.
+
+## Estructura
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/
+├── components/
+│   ├── ui/                 # Piezas compartidas: Icon, Button, SectionHeader, Logo
+│   ├── Navbar.astro        # Navegación fija + menú móvil accesible
+│   ├── Hero.astro          # Titular, CTA y demo
+│   ├── WhatsAppDemo.astro  # Demo interactiva: audio / foto / texto → extracción → confirmación
+│   ├── Benefits.astro      # #beneficios
+│   ├── HowItWorks.astro    # #como-funciona
+│   ├── Calculator.astro    # #calculadora
+│   ├── Comparison.astro    # #comparativa
+│   ├── Pricing.astro       # #precios
+│   ├── Faq.astro           # #preguntas (incluye JSON-LD FAQPage)
+│   ├── FinalCta.astro
+│   └── Footer.astro        # Incluye el botón flotante de WhatsApp (solo móvil)
+├── layouts/Layout.astro    # <head>, metadatos, fuentes y revelado al hacer scroll
+├── lib/site.ts             # Número de WhatsApp, waLink() y enlaces de navegación
+├── pages/index.astro       # Orden de las secciones
+└── styles/global.css       # Tokens de diseño (@theme) y utilidades
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Sistema de diseño
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+- **Tokens** en `src/styles/global.css` (`@theme`): neutrales `ink`, `body`, `muted`, `line`, `canvas`, `surface`;
+  acento `brand-*` (verde fintech); la paleta `wa-*` se reserva para el mockup de WhatsApp.
+- **Tipografía**: Geist (texto) y Geist Mono (etiquetas y cifras).
+- **Iconos**: usa siempre `<Icon name="…" />`; un nombre desconocido hace fallar el build.
+- **Enlaces**: solo anclas a secciones existentes o `waLink()`; nunca `href="#"`.
+- **Textos**: en español (Colombia), con montos en formato `$18.000`.
 
-Any static assets, like images, can be placed in the `public/` directory.
+Para que las vistas previas en redes usen URLs absolutas (`og:image`, `canonical`), define el dominio de
+producción en `astro.config.mjs` con la opción `site`.
 
-## 🧞 Commands
+## Docker
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+La imagen no compila el sitio: copia `dist/` a Nginx. Primero ejecuta `npm run build` y luego
+`docker compose up --build`. El servicio se une a la red externa `web-network` (pensada para un proxy inverso),
+así que debe existir antes (`docker network create web-network`).
