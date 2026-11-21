@@ -3,8 +3,8 @@ export const SITE = {
   tagline: 'Tus gastos bajo control desde WhatsApp',
   description:
     'Registra tus gastos por WhatsApp con una nota de voz, una foto del recibo o un texto. SmartSavings extrae monto, categoría y comercio con IA; tú solo confirmas.',
-  whatsappNumber: '573332937647',
-  whatsappDisplay: '+57 333 293 7647',
+  whatsappNumber: '15551624395',
+  whatsappDisplay: '+1 (555) 162-4395',
   year: 2026,
 } as const;
 
